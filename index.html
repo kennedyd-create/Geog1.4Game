@@ -6,21 +6,21 @@
 <title>Decision Academy: Ōtepoti Case File</title>
 <style>
   :root{
-    --ink:#0a1018;
-    --panel:#111b28;
-    --panel-2:#16223a;
-    --steel:#2c5a66;
-    --steel-dim:#163038;
-    --gold:#e0a530;
-    --gold-bright:#ffce6b;
-    --cd-orange:#e8622c;
+    --ink:#161b23;
+    --panel:#212a37;
+    --panel-2:#2a354b;
+    --steel:#4d747e;
+    --steel-dim:#31484f;
+    --gold:#e2ac40;
+    --gold-bright:#ffcf70;
+    --cd-orange:#e96e3c;
     --paper:#eef3ea;
     --paper-dim:#dbe4d8;
     --paper-ink:#16241f;
-    --text:#e8eef5;
-    --text-mute:#7d93a8;
-    --bad:#c1503f;
-    --good:#4f9e6a;
+    --text:#eef2f8;
+    --text-mute:#93a8bb;
+    --bad:#c55e4e;
+    --good:#60a778;
   }
   *{box-sizing:border-box;}
   body{
@@ -91,7 +91,18 @@
   .journal-tab{flex:1;font-weight:700;font-size:9.5px;letter-spacing:0.3px;background:var(--panel);color:var(--text-mute);border:none;border-right:1px solid var(--steel-dim);padding:9px 4px;cursor:pointer;}
   .journal-tab:last-child{border-right:none;}
   .journal-tab.active{background:var(--panel-2);color:var(--gold-bright);box-shadow:inset 0 -2px 0 var(--gold);}
+  .journal-tab.teach-me-tab{background:#3a5544;color:#cfe8c8;}
+  .journal-tab.teach-me-tab.active{background:var(--paper);color:#123830;box-shadow:inset 0 -2px 0 #3a5544;}
   .journal-body{padding:10px;display:flex;flex-direction:column;gap:8px;max-height:600px;overflow-y:auto;}
+  .journal-body.teach-mode{background:var(--paper);}
+  .teach-card{background:#fff;color:var(--paper-ink);border:2px solid #3a5544;border-left:6px solid #3a5544;padding:12px 13px;font-family:Georgia,'Times New Roman',serif;}
+  .teach-card h4{margin:0 0 6px;font-size:13.5px;font-weight:800;color:#123830;font-family:'Manrope',sans-serif;}
+  .teach-card p{margin:0 0 8px;font-size:12.5px;line-height:1.65;}
+  .teach-card p:last-child{margin-bottom:0;}
+  .teach-card .teach-tag{display:inline-block;font-family:'Manrope',sans-serif;font-size:9px;letter-spacing:1px;font-weight:800;color:#fff;background:#3a5544;padding:3px 7px;margin-bottom:7px;}
+  .teach-card.current{border-left-color:var(--gold);box-shadow:0 0 0 2px var(--gold);}
+  .teach-card.current .teach-tag{background:var(--gold);color:#1a1408;}
+  .teach-note{font-family:'Manrope',sans-serif;font-size:11px;color:#3d5548;background:#e4efdd;border:1px dashed #3a5544;padding:8px 10px;}
   .check-item{background:var(--panel-2);border:2px solid var(--steel-dim);padding:9px 10px;display:flex;gap:10px;align-items:flex-start;}
   .check-item.done{border-color:var(--good);background:rgba(79,158,106,.1);}
   .check-box{flex:none;width:18px;height:18px;border:2px solid var(--steel);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--good);margin-top:1px;}
@@ -118,7 +129,7 @@
 
   .overlay{position:fixed;inset:0;background:rgba(4,5,8,.86);display:flex;align-items:center;justify-content:center;padding:16px;z-index:40;}
   .overlay[hidden]{display:none;}
-  .modal{width:100%;max-width:640px;background:var(--panel);border:3px solid var(--gold);max-height:90vh;display:flex;flex-direction:column;}
+  .modal{width:100%;max-width:820px;background:var(--panel);border:3px solid var(--gold);max-height:90vh;display:flex;flex-direction:column;}
   .modal-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:2px solid var(--steel-dim);background:var(--panel-2);}
   .npc-badge{width:34px;height:34px;flex:none;border:2px solid var(--steel);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#000;}
   .modal-head h3{margin:0;font-size:11.5px;color:var(--gold-bright);}
@@ -133,8 +144,19 @@
   .title-head > div{position:relative;z-index:1;}
   .title-head h3{font-size:16px;letter-spacing:1.5px;text-shadow:0 0 14px rgba(255,206,107,.4);}
   .title-head .role{margin-top:5px;font-size:10px;}
-  .modal-body{padding:16px;overflow-y:auto;font-size:13px;line-height:1.65;color:var(--paper);}
-  .modal-body p{margin:0 0 12px;}
+  .modal-body{padding:22px;overflow-y:auto;font-size:14.5px;line-height:1.75;color:var(--paper);}
+  .modal-body p{margin:0 0 13px;}
+  .quote-box{text-align:center;padding:22px 10px;}
+  .quote-text{font-size:19px;font-weight:700;font-style:italic;color:var(--gold-bright);line-height:1.5;margin:0 0 12px;}
+  .quote-by{font-size:12px;color:var(--text-mute);margin:0;}
+  .modal.teach-modal{border-color:#3a5544;}
+  .modal.teach-modal .modal-head{background:#20362a;border-bottom-color:#3a5544;}
+  .modal.teach-modal .modal-head h3{color:#a9e0a0;}
+  .modal.teach-modal .npc-badge{border-color:#4f9e6a;background:#3a5544;}
+  .teach-popup{display:flex;flex-direction:column;gap:12px;}
+  .sniper-timer-row{display:flex;align-items:center;gap:10px;margin:10px 0 4px;}
+  .sniper-timer{font-size:22px;font-weight:800;color:var(--gold-bright);font-variant-numeric:tabular-nums;border:2px solid var(--steel);padding:4px 12px;}
+  .sniper-timer.urgent{color:#ff8a7a;border-color:#c1503f;animation:speakPulse .5s ease-in-out infinite;}
   .diagram-frame{background:#0c1420;border:2px solid var(--steel);padding:10px;margin:4px 0 14px;}
   .diagram-frame svg{width:100%;height:auto;display:block;}
   .card .diagram-frame{margin:6px 0 4px;}
@@ -160,7 +182,7 @@
   .write-checklist{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
   .write-model{background:var(--panel-2);border:2px dashed var(--steel-dim);padding:9px 10px;margin-top:10px;}
   .write-model p{margin:0;font-size:12px;line-height:1.6;color:var(--text);}
-  .opt-btn{text-align:left;background:var(--panel-2);border:2px solid var(--steel);color:var(--text);padding:10px 12px;font-family:inherit;font-weight:500;font-size:13px;cursor:pointer;}
+  .opt-btn{text-align:left;background:var(--panel-2);border:2px solid var(--steel);color:var(--text);padding:12px 14px;font-family:inherit;font-weight:500;font-size:14px;line-height:1.5;cursor:pointer;}
   .opt-btn:hover:not(:disabled){border-color:var(--gold);}
   .opt-btn.correct{border-color:var(--good);background:#1a3320;color:#cdeec1;}
   .opt-btn.wrong{border-color:var(--bad);background:#3a1f26;color:#f0ccd2;}
@@ -287,6 +309,7 @@
         <button class="journal-tab active" id="tab-data" data-tab="data">CASE FILE</button>
         <button class="journal-tab" id="tab-rs" data-tab="rs">EXAM METHOD</button>
         <button class="journal-tab" id="tab-checklist" data-tab="checklist">PROGRESS</button>
+        <button class="journal-tab teach-me-tab" id="tab-teach" data-tab="teach">📘 TEACH ME</button>
       </div>
       <div class="journal-body" id="journal-body"></div>
       <div class="map-track" id="map-track"></div>
@@ -354,9 +377,13 @@
         <div>Wrong answers cost a few points too, so read carefully before choosing — you can always try again.</div>
         <div>Each character's case file needs to be read and ticked before their task unlocks — take the time to actually read it, the task is easier once you have.</div>
         <div>Characters marked "bonus" are optional — good for extra points and deeper understanding.</div>
+        <div>Watch for <b>The Siren</b> — a flashing red hunter that actively chases you around some zones. Get caught and you're forced to answer a question: right earns a bonus, wrong costs you points on the spot. Dodge it on foot if you'd rather not risk it.</div>
+        <div>Watch out too for <b>The Marksman</b> — a flashing bright green figure who lines up a shot along your row or column. He'll telegraph the shot for one move with a dashed line before firing, so step off his row or column to dodge. Get hit and you have <b>10 seconds</b> to answer a question — run out of time or answer wrong and you lose 50 points on the spot.</div>
+        <div>Look for the green <b>📘 Teach Me</b> icon in each room — open it first. It explains exactly what that room is asking of you, and reading it is what unlocks the room's first task.</div>
         <div>The <b>CASE FILE</b> tab in your journal keeps every formula and fact you unlock, including three pinned reference cards you can check any time.</div>
         <div>Finish all zones, then find the Chief Examiner in the Final Assessment for a brand-new topic to test your method on.</div>
         <div>Once you pass the Final Assessment, you'll need to <b>copy or email your Case File Summary</b> to your teacher before that window will close.</div>
+        <div>Real exam tips worth remembering: read the resource booklet before naming the challenge, don't copy out long quotations, watch whether a question wants the MOST or LEAST influential viewpoint, and always finish every task — running out of time costs more marks than most students expect.</div>
       </div>
     </div>
     <div class="modal-foot"><button class="btn" id="btn-help-close">Got it</button></div>
@@ -409,7 +436,14 @@
           <button class="opt-btn jump-btn" data-jump="decision">4. Decision Chamber — Task C</button>
           <button class="opt-btn jump-btn" data-jump="concepts">5. Concepts Vault — bonus</button>
           <button class="opt-btn jump-btn" data-jump="exam">6. Final Assessment</button>
-          <button class="opt-btn jump-btn" data-jump="extension">7. Extension Field Site — bonus</button>
+          <button class="opt-btn jump-btn" data-jump="extensionA">7. Extension Field Site — Task A</button>
+          <button class="opt-btn jump-btn" data-jump="extensionB">8. Extension Field Site — Task B</button>
+          <button class="opt-btn jump-btn" data-jump="extensionC">9. Extension Field Site — Task C</button>
+          <button class="opt-btn jump-btn" data-jump="extensionFinale">10. Extension Field Site — Marker's Eye</button>
+          <button class="opt-btn jump-btn" data-jump="fijiA">11. Pacific Field Site — Task A</button>
+          <button class="opt-btn jump-btn" data-jump="fijiB">12. Pacific Field Site — Task B</button>
+          <button class="opt-btn jump-btn" data-jump="fijiC">13. Pacific Field Site — Task C</button>
+          <button class="opt-btn jump-btn" data-jump="fijiFinale">14. Pacific Field Site — Marker's Eye</button>
         </div>
       </div>
       <p class="dlg-note">Jumping to a zone turns preview mode on automatically.</p>
@@ -560,6 +594,35 @@ var DIAGRAM_WAIMARAMA_CHART = (function(){
   return '<div class="diagram-frame">'+svg+'</div>';
 })();
 
+var DIAGRAM_FIJI_SLR = (function(){
+  var baseY = 150, maxH = 110, waterY = 150;
+  var lowM = 2, highM = 4, maxM = 4;
+  var lowH = Math.round(lowM/maxM*maxH), highH = Math.round(highM/maxM*maxH);
+  var svg = '<svg viewBox="0 0 480 210" role="img" aria-label="Bar chart comparing lower and higher sea level rise projections for Fiji by 2100, alongside a displacement statistic">';
+  svg += '<rect width="480" height="210" fill="#0e2a2a"/>';
+  svg += '<text x="10" y="16" fill="#ffce6b" font-size="10.5" font-weight="800" font-family="sans-serif">Projected sea level rise by 2100 (Fiji)</text>';
+  svg += '<line x1="40" y1="'+waterY+'" x2="220" y2="'+waterY+'" stroke="#4c8fd6" stroke-width="2"/>';
+  svg += '<rect x="70" y="'+(baseY-lowH)+'" width="46" height="'+lowH+'" fill="#4f9e6a"/>';
+  svg += '<text x="93" y="'+(baseY-lowH-8)+'" fill="#c9f0d0" font-size="10.5" text-anchor="middle" font-family="sans-serif">~2m</text>';
+  svg += '<text x="93" y="'+(baseY+16)+'" fill="#7d93a8" font-size="8.5" text-anchor="middle" font-family="sans-serif">lower projection</text>';
+  svg += '<rect x="150" y="'+(baseY-highH)+'" width="46" height="'+highH+'" fill="#e2493a"/>';
+  svg += '<text x="173" y="'+(baseY-highH-8)+'" fill="#ffb3a8" font-size="10.5" text-anchor="middle" font-family="sans-serif">~4m</text>';
+  svg += '<text x="173" y="'+(baseY+16)+'" fill="#7d93a8" font-size="8.5" text-anchor="middle" font-family="sans-serif">higher projection</text>';
+  svg += '<line x1="30" y1="'+baseY+'" x2="220" y2="'+baseY+'" stroke="#2c5a66" stroke-width="1.5"/>';
+  svg += '<g transform="translate(255,30)">';
+  svg += '<text x="0" y="0" fill="#ffce6b" font-size="10.5" font-weight="800" font-family="sans-serif">What that means on the ground</text>';
+  svg += '<text x="0" y="24" fill="#eef3ea" font-size="20" font-weight="800" font-family="sans-serif">150,000</text>';
+  svg += '<text x="0" y="40" fill="#7d93a8" font-size="8.5" font-family="sans-serif">people potentially displaced across Fiji</text>';
+  svg += '<text x="0" y="72" fill="#eef3ea" font-size="20" font-weight="800" font-family="sans-serif">1.5m/yr</text>';
+  svg += '<text x="0" y="88" fill="#7d93a8" font-size="8.5" font-family="sans-serif">coastline lost at Togoru village</text>';
+  svg += '<text x="0" y="120" fill="#eef3ea" font-size="20" font-weight="800" font-family="sans-serif">31%</text>';
+  svg += '<text x="0" y="136" fill="#7d93a8" font-size="8.5" font-family="sans-serif">wave height cut by restored mangroves</text>';
+  svg += '</g>';
+  svg += '<text x="10" y="200" fill="#5c7285" font-size="8" font-family="sans-serif">Original chart — figures drawn from the 2025 NZQA resource booklet on sea level rise in Fiji.</text>';
+  svg += '</svg>';
+  return '<div class="diagram-frame">'+svg+'</div>';
+})();
+
 /* =========================================================
    SOURCES / REFERENCES (shown on the Case File Summary screen)
 ========================================================= */
@@ -569,7 +632,9 @@ var REFERENCES = [
   { title:'NZQA Geography 91935 (2024) — Examination Paper, Resource Booklet &amp; Assessment Exemplar',
     note:'© New Zealand Qualifications Authority. The Waimārama Beach vehicle-access scenario, its four stakeholders, and the Extension field site\'s content are drawn from this real 2024 paper and exemplar, paraphrased rather than reproduced. The original resource booklet\'s photos, maps and satellite imagery are credited there to Shutterstock, Adobe Stock, Hastings District Council, Google Earth, and named news/organisation sites — those images are not reproduced in this game. View the original resource booklet alongside this game for the real Resource A–I visuals.' },
   { title:'Table 6 — Safety interventions &amp; rescues, Waimārama Surf Life Saving Club, 2013–23',
-    note:'Class-supplied data. The bar chart in the Extension field site is an original chart built from this dataset, not a reproduction of any booklet figure.' }
+    note:'Class-supplied data. The bar chart in the Extension field site is an original chart built from this dataset, not a reproduction of any booklet figure.' },
+  { title:'NZQA Geography 91935 (2025) — Examination Paper, Resource Booklet &amp; Excellence Exemplar',
+    note:'© New Zealand Qualifications Authority. The Pacific Field Site\'s sea-level-rise-in-Fiji scenario, its four stakeholders (Prime Minister Sitiveni Rabuka, Lani Bola, local climate change campaigners, and town councils), its three response options, and its concepts (bula vakavanua, vanua, tabu) are drawn from this real 2025 paper, resource booklet and Excellence-level exemplar script, paraphrased rather than reproduced verbatim. The original resource booklet\'s photos, maps and diagrams are not reproduced in this game — view the original alongside this game for the real visuals.' }
 ];
 
 /* =========================================================
@@ -579,12 +644,14 @@ var PINNED_CARDS = [
   { tag:'ALWAYS ON HAND · TASK A', title:'The Issue formula (works on ANY topic)',
     body:'<div><span class="subtitle">Step 1 — Describe</span>The challenge in relation to its <span class="kw">environment</span> — natural and/or cultural.</div>' +
       '<div><span class="subtitle">Step 2 — Explain why</span>Why it is a challenge for the <span class="kw">community</span> — who is affected, and how.</div>' +
-      '<div><span class="subtitle">Step 3 — Evidence</span>Attach <span class="kw">specific evidence</span>: a number, date, distance or named place.</div>' },
+      '<div><span class="subtitle">Step 3 — Evidence</span>Attach <span class="kw">specific evidence</span>: a number, date, distance or named place.</div>' +
+      '<div class="callout-box" style="margin-top:8px;border-left:3px solid var(--gold);background:rgba(224,165,48,.08);padding:6px 8px;"><b>Read first, don\'t assume.</b> Real NZQA candidates have lost marks by guessing the challenge from the topic\'s general theme instead of the resource booklet in front of them — one year the real challenge was "conflict over access", not "sand mining"; another year it was a specific squeeze between two named villages, not sea level rise in general. Always name the SPECIFIC challenge the booklet describes, not the broad topic.</div>' },
   { tag:'ALWAYS ON HAND · TASK B', title:'The Perspectives formula (works on ANY topic)',
     body:'<div>For each person or group, work through this chain:</div>' +
-      '<div style="margin-top:4px;"><span class="kw">Viewpoint</span> (their opinion on this issue) &rarr; <span class="kw">Perspective</span> (economic / social / environmental / cultural lens) &rarr; the <span class="kw-good">beliefs or values</span> behind it &rarr; evidence for HOW MUCH this shaped the decision (&ldquo;to a great / moderate / limited extent&hellip;&rdquo;).</div>' },
+      '<div style="margin-top:4px;"><span class="kw">Viewpoint</span> (their opinion on this issue) &rarr; <span class="kw">Perspective</span> (economic / social / environmental / cultural lens) &rarr; the <span class="kw-good">beliefs or values</span> behind it &rarr; evidence for HOW MUCH this shaped the decision (&ldquo;to a great / moderate / limited extent&hellip;&rdquo;).</div>' +
+      '<div class="callout-box" style="margin-top:8px;border-left:3px solid var(--gold);background:rgba(224,165,48,.08);padding:6px 8px;"><b>Don\'t mix these up.</b> NZQA examiners flag this confusion almost every single year: a <span class="kw">viewpoint</span> is the OPINION on this one issue ("ban vehicles"); a <span class="kw">perspective</span> is the LENS behind it (cultural, economic, environmental, social). Never use the words interchangeably — say which is which.</div>' },
   { tag:'ALWAYS ON HAND · TASK C', title:'The Decision formula (works on ANY topic)',
-    body:'<div><span class="subtitle">The shape</span>State your choice clearly &rarr; explain why NOT the other options &rarr; build your main argument, weighing <span class="kw">perspectives</span> + <span class="kw">evidence</span> + <span class="kw">terminology</span> &rarr; bring in a <span class="kw-good">Māori or Pacific concept</span> &rarr; name the viewpoint that mattered <span class="kw">most</span> and justify why &rarr; finish with a <span class="kw">judgement</span>, not a summary.</div>' }
+    body:'<div><span class="subtitle">The shape</span>State your choice clearly &rarr; explain why NOT the other options &rarr; build your main argument, weighing <span class="kw">perspectives</span> + <span class="kw">evidence</span> + <span class="kw">terminology</span> &rarr; bring in a <span class="kw-good">Māori or Pacific concept</span> &rarr; name the viewpoint that mattered <span class="kw">most</span> (or, some years, the <span class="kw">LEAST</span> — read the actual question) and justify why &rarr; finish with a <span class="kw">judgement</span>, not a summary.</div>' }
 ];
 
 /* =========================================================
@@ -605,41 +672,68 @@ var CARDS = {
   dc_options: { tag:'CASE FILE · TASK C', title:'Three options on the table', body:'<p><b>Option A — Sea walls &amp; groynes</b> (hard engineering): protects quickly, but costly consents ($15k–$250k) and can disrupt natural sand movement.</p><p><b>Option B — Dune planting/notching</b> (soft engineering): far cheaper, protects taonga, aligns with kaitiakitanga, strengthens over time — but slower to build up protection.</p><p><b>Option C — Managed retreat</b> (Avoid / Protect / Accommodate): the only real fix for the 2050 uninsurability crisis, but socially and politically disruptive right now.</p>' + DIAGRAM_OPTIONS },
   dc_plan: { tag:'WRITING PLAN', title:'The Excellence writing plan', body:'<p>1. State your choice clearly.<br>2. Mini-plan each paragraph’s point and evidence.<br>3. Structure: intro &rarr; why not the other options &rarr; your main argument (perspectives + evidence + terminology) &rarr; a concept &rarr; 4. a strong conclusion that restates your judgement.</p>' },
   dc_extent: { tag:'PHRASE BANK', title:'Sounding like Excellence', body:'<p>Weak: <i>"Option B is good because it helps the environment."</i></p><p>Strong: <i>"Option B is the superior decision because it uniquely satisfies Kāi Tahu’s kaitiakitanga obligations and costs far less than hard engineering, even though it only partly addresses the underlying uninsurability crisis threatening 10,000 homes by 2050."</i></p><p>The strong version names a choice, uses evidence and terminology, brings in a concept, AND honestly weighs a trade-off — that’s what "evaluate the extent to which" looks like.</p>' },
-  dc_judge: { tag:'TASK C · PART 4', title:'Naming the most important viewpoint', body:'<p>Don’t just name a viewpoint — justify why it mattered most. For Dunedin: Kāi Tahu’s kaitiakitanga-based viewpoint can be argued as most important because it carries an obligation to protect taonga and whenua for generations beyond any single storm season or council term.</p>' },
+  dc_judge: { tag:'TASK C · PART 4', title:'Naming the most (or least) important viewpoint', body:'<p>Don’t just name a viewpoint — justify why it mattered most (or least, if that\'s what the question asks). For Dunedin: Kāi Tahu’s kaitiakitanga-based viewpoint can be argued as most important because it carries an obligation to protect taonga and whenua for generations beyond any single storm season or council term. Always check which direction — most or least influential — the actual question wants.</p>' },
   cv_maori: { tag:'TE AO MĀORI', title:'Six concepts, six examples', body:'<ul><li><b>Tikanga</b> — customs ensuring decisions respect culture (Ihumātao)</li><li><b>Kaitiakitanga</b> — guardianship of land/resources for future generations (Kaikōura Marine Guardians)</li><li><b>Manaakitanga</b> — hospitality and care in crisis (Christchurch earthquakes)</li><li><b>Whenua</b> — land central to identity (Ihumātao)</li><li><b>Tino Rangatiratanga</b> — self-determination over resources (Waikato River)</li><li><b>Whanaungatanga</b> — kinship shaping collective decisions (South Auckland housing)</li></ul>' },
   cv_pacific: { tag:'PACIFIC CONCEPTS', title:'Six more concepts, six more examples', body:'<ul><li><b>Hekenga</b> — migration under climate/resource pressure (Samoan migration to NZ)</li><li><b>Alofa</b> — love/compassion driving communal rebuilding (Samoa cyclone recovery)</li><li><b>Vā</b> — the relational space that keeps harmony (Māngere multicultural planning)</li><li><b>Fonua</b> — ancestral connection to land (Samoan land tenure disputes)</li><li><b>Vaka</b> — navigating challenges together (Pacific climate cooperation)</li><li><b>Kuleana</b> — responsibility and stewardship (village matai governance)</li></ul>' },
-  cv_quiz: { tag:'QUICK RECALL', title:'Kaitiakitanga, defined', body:'<p>Guardianship or stewardship of land and resources, protecting them for future generations.</p>' },
+  cv_quiz: { tag:'CONCEPT INTEGRATION', title:'Naming a concept vs. integrating one', body:'<p>Weak: <i>"Kaitiakitanga is guardianship of land and resources for future generations."</i></p><p>Strong: <i>"Option B reflects kaitiakitanga because restoring the dunes actively protects both the taonga they hold and the whenua itself for future generations — this shared obligation is exactly why Kāi Tahu’s viewpoint carries so much weight in this decision."</i></p><p>The weak version just recites a dictionary definition. The strong version ties the concept directly to the specific decision and evidence in front of you — that’s what "integrating" a concept actually looks like at Excellence.</p>' },
   fx_challenge: { tag:'EXTENSION · TASK A', title:'Waimārama Beach, described', body:'<p>Vehicles have long driven onto parts of Waimārama Beach, a small Hawke’s Bay settlement of around 230 residents with deep Rangitāne and Ngāti Kahungunu history. In summer 2023/24 a Ngāti Kahungunu spokesperson blocked part of the beach to vehicles with limestone boulders, forcing Hastings District Council to decide on a long-term access policy.</p><p>It matters because the dune system is already fragile — <span class="kw-good">erosion up to 0.85 metres a year</span> along the southern beach sea wall — and because beach users rely on vehicle access in very different ways.</p>' + DIAGRAM_WAIMARAMA_CHART },
   fx_evidence: { tag:'EXTENSION · TASK A', title:'Evidence, not opinion', body:'<p>A checkable number beats a feeling. From Waimārama: <span class="kw-good">erosion up to 0.85 metres a year</span> along the southern sea wall; <span class="kw-good">5,161 safety interventions</span> logged by the Surf Life Saving Club in 2021/22 alone.</p>' },
   fx_perspectives: { tag:'EXTENSION · TASK B', title:'Four stakeholders at Waimārama', body:'<div><span class="subtitle">Jason &amp; Kelly Smith</span><span class="kw-good">Economic</span> — surfcasting, vehicle access, cost of living.</div><div><span class="subtitle">Ngāti Kahungunu spokesperson</span><span class="kw-good">Cultural / indigenous</span> — dune damage, child safety, Māori-owned land.</div><div><span class="subtitle">Sophie Stevens</span><span class="kw-good">Social</span> — long-time resident, beach culture and safety.</div><div><span class="subtitle">Peter Johnston</span><span class="kw-good">Environmental</span> — dune damage, species, climate change and sea-level rise.</div>' },
   fx_written: { tag:'EXTENSION · TASK B', title:'Two perspectives, one viewpoint', body:'<p>The <span class="kw">Ngāti Kahungunu spokesperson</span> (cultural) and <span class="kw">Peter Johnston</span> (environmental) start from very different values, yet both reach the <span class="kw-good">same viewpoint</span> — ban vehicles completely. Spotting that kind of overlap is a genuinely Excellence-level observation.</p>' },
   fx_decision: { tag:'EXTENSION · TASK C', title:'Three options at Waimārama', body:'<p><b>Option 1</b> — no change, vehicles keep partial access.<br><b>Option 2</b> — a permanent, complete vehicle ban.<br><b>Option 3</b> — remove all vehicle bans.</p><p>A top justification names a choice, uses <span class="kw">specific evidence</span> and <span class="kw">named stakeholders</span>, and honestly weighs a <span class="kw-good">trade-off</span> — not just a general claim about what feels safest.</p>' },
   fx_exemplar: { tag:'EXTENSION · TASK C', title:'The Excellence shape, once more', body:'<p><span class="subtitle">The order that works</span>Verdict &rarr; support with named perspectives &rarr; another perspective &rarr; an honest limitation &rarr; a concluding judgement. Same shape as Dunedin, same shape on any topic the exam hands you.</p>' },
-  fx_highlight: { tag:'EXTENSION · MARKER’S EYE', title:'Spot the name, perspective, evidence', body:'<p>A strong Task B paragraph makes it easy for a marker to find: <span class="kw">who</span> you’re discussing, <span class="kw">what perspective</span> they hold, and the <span class="kw-good">evidence</span> backing it up. If a marker has to hunt for these, the paragraph needs tightening.</p>' }
+  fx_highlight: { tag:'EXTENSION · MARKER’S EYE', title:'Spot the name, perspective, evidence', body:'<p>A strong Task B paragraph makes it easy for a marker to find: <span class="kw">who</span> you’re discussing, <span class="kw">what perspective</span> they hold, and the <span class="kw-good">evidence</span> backing it up. If a marker has to hunt for these, the paragraph needs tightening.</p>' },
+  pf_challenge: { tag:'PACIFIC FIELD SITE · TASK A', title:'Sea level rise in Fiji, described', body:'<p>Rising sea levels are already reshaping low-lying coastal Fiji. Scientists project <span class="kw-good">roughly 2 to 4 metres of sea level rise by 2100</span> under different emissions scenarios, and villages such as Vunidogoloa have already had to relocate inland, in 2014, because the sea had made the old village site unliveable.</p><p>It is a serious geographic challenge because Fiji\'s population of around 933,000 is heavily coastal, and tourism — around 40% of GDP — depends on the very shoreline that is eroding, so entire communities and the national economy both stand to lose.</p>' + DIAGRAM_FIJI_SLR },
+  pf_evidence: { tag:'PACIFIC FIELD SITE · TASK A', title:'Evidence, not opinion — Fiji', body:'<p>Checkable numbers from the real 2025 resource booklet: <span class="kw-good">2–4 metres</span> of projected sea level rise by 2100; up to <span class="kw-good">150,000 people</span> potentially displaced across Fiji; Togoru village losing coastline at <span class="kw-good">1.5 metres a year</span>; six villages already relocated, with 40+ more identified as at risk.</p>' },
+  pf_perspectives: { tag:'PACIFIC FIELD SITE · TASK B', title:'Four stakeholders in Fiji', body:'<div><span class="subtitle">PM Sitiveni Rabuka</span><span class="kw-good">Political</span> — national policy, international negotiation, relocation funding.</div><div><span class="subtitle">Lani Bola</span><span class="kw-good">Cultural / spiritual / social</span> — vanua, ancestral land, community identity.</div><div><span class="subtitle">Local climate change campaigners</span><span class="kw-good">Environmental / economic</span> — ecosystem protection, long-term cost of inaction.</div><div><span class="subtitle">Town councils</span><span class="kw-good">Economic / social</span> — tourism revenue, infrastructure cost, resident services.</div>' },
+  pf_written: { tag:'PACIFIC FIELD SITE · TASK B', title:'One issue, several perspectives at once', body:'<p><span class="kw">Lani Bola</span>\'s viewpoint is rarely built from just one perspective — it blends <span class="kw-good">cultural</span> (ancestral connection to the vanua) with a <span class="kw-good">social</span> concern for community wellbeing, at the same time. Naming that blend, rather than forcing her into a single box, is exactly the compound-perspective insight Excellence answers reach for.</p>' },
+  pf_decision: { tag:'PACIFIC FIELD SITE · TASK C', title:'Three options for Fiji', body:'<p><b>Option 1 — Relocation</b> (e.g. Vunidogoloa-style village moves): removes the risk directly, but costs up to <span class="kw-good">NZD 5 million</span> per village and severs communities from ancestral land.</p><p><b>Option 2 — Nature-based defences</b> (mangrove restoration): mangroves have been shown to cut wave height by up to <span class="kw-good">31%</span>, and protect ecosystems — but take years to establish and don\'t fully stop severe events.</p><p><b>Option 3 — Man-made defences</b> (sea walls): protect quickly, but are expensive to build and maintain, and can damage the coastal ecosystems they sit on.</p>' },
+  pf_exemplar: { tag:'PACIFIC FIELD SITE · TASK C', title:'The Excellence shape, on a Pacific topic', body:'<p><span class="subtitle">Same order that always works</span>Verdict &rarr; support with named perspectives &rarr; another perspective &rarr; an honest limitation &rarr; a concluding judgement. The real 2025 Excellence exemplar for this exact Fiji question follows this same shape — the method really does transfer to any topic.</p>' },
+  pf_highlight: { tag:'PACIFIC FIELD SITE · MARKER’S EYE', title:'Naming the LEAST influential viewpoint', body:'<p>The real 2025 exam asked candidates to name the viewpoint with the LEAST influence — not the most. A strong answer argued that <span class="kw">PM Rabuka\'s political viewpoint</span>, while important nationally, was the least influential on ground-level decisions, because it operates at a broad policy level rather than engaging with the specific, holistic mix of cultural, environmental and economic concerns closer to the affected communities.</p>' }
 };
 
 /* =========================================================
    ZONES
 ========================================================= */
 var ZONES = {
-  hq: { name:'CASE FILE ACADEMY', theme:'academy', desc:'Every exam gives you a brand-new topic. Learn the method that cracks any of them.', entryY:4, exitY:4, next:'issue', npcs:['hq_examiner','hq_terms','hq_marker'] },
-  issue: { name:'THE CHALLENGE ZONE — Task A', theme:'coast', desc:'Case file open: coastal erosion, St Clair–St Kilda, ōtepoti (Dunedin).', entryY:4, exitY:4, next:'perspectives', npcs:['is_reporter','is_analyst','is_photo'] },
-  perspectives: { name:'PERSPECTIVES PLAZA — Task B', theme:'plaza', desc:'Four stakeholders, four perspectives. Same coastline, very different priorities.', entryY:4, exitY:4, next:'decision', npcs:['pv_council','pv_kaitahu','pv_sci','pv_slsc','pv_trainer'] },
-  decision: { name:'DECISION CHAMBER — Task C', theme:'chamber', desc:'Three options on the table. Choose one, and justify it like an examiner expects.', entryY:4, exitY:4, next:'concepts', npcs:['dc_options','dc_plan','dc_extent','dc_judge'] },
-  concepts: { name:'CONCEPTS VAULT — bonus', theme:'vault', desc:'Bring one of these into your Task C answer to reach for Excellence.', entryY:4, exitY:4, next:'exam', npcs:['cv_maori','cv_pacific','cv_quiz'] },
-  exam: { name:'FINAL ASSESSMENT — New Case File', theme:'exam', desc:'A topic you have never seen. Same method. Show the Chief Examiner what you’ve got.', entryY:4, exitY:4, next:'extension', npcs:['ex_chief'] },
-  extension: { name:'EXTENSION FIELD SITE — Waimārama Beach', theme:'field', desc:'Optional bonus round: a real NCEA-style case study, vehicle access at Waimārama Beach. Work through it in order — Task A, then B, then C, then the marker\'s-eye finale.', entryY:4, exitY:null, next:null, npcs:['fx_challenge','fx_evidence','fx_perspectives','fx_written','fx_decision','fx_exemplar','fx_highlight'] }
+  hq: { name:'CASE FILE ACADEMY', theme:'academy', desc:'Every exam gives you a brand-new topic. Learn the method that cracks any of them.', entryY:4, exit:{side:'bottom',pos:6}, next:'issue', quoteIcon:{x:10,y:5}, teachIcon:{x:2,y:2}, npcs:['hq_examiner','hq_terms','hq_marker'] },
+  issue: { name:'THE CHALLENGE ZONE — Task A', theme:'coast', desc:'Case file open: coastal erosion, St Clair–St Kilda, ōtepoti (Dunedin).', entryY:4, exit:{side:'right',pos:3}, next:'perspectives', quoteIcon:{x:10,y:5}, teachIcon:{x:2,y:2}, npcs:['is_reporter','is_analyst','is_photo'] },
+  perspectives: { name:'PERSPECTIVES PLAZA — Task B', theme:'plaza', desc:'Four stakeholders, four perspectives. Same coastline, very different priorities.', entryY:4, exit:{side:'bottom',pos:6}, next:'decision', quoteIcon:{x:6,y:5}, teachIcon:{x:6,y:1}, npcs:['pv_council','pv_kaitahu','pv_sci','pv_slsc','pv_trainer'] },
+  decision: { name:'DECISION CHAMBER — Task C', theme:'chamber', desc:'Three options on the table. Choose one, and justify it like an examiner expects.', entryY:4, exit:{side:'right',pos:4}, next:'concepts', quoteIcon:{x:6,y:3}, teachIcon:{x:6,y:5}, npcs:['dc_options','dc_plan','dc_extent','dc_judge'] },
+  concepts: { name:'CONCEPTS VAULT — bonus', theme:'vault', desc:'Bring one of these into your Task C answer to reach for Excellence.', entryY:4, exit:{side:'bottom',pos:5}, next:'exam', quoteIcon:{x:6,y:2}, teachIcon:{x:3,y:5}, npcs:['cv_maori','cv_pacific','cv_quiz'] },
+  exam: { name:'FINAL ASSESSMENT — New Case File', theme:'exam', desc:'A topic you have never seen. Same method. Show the Chief Examiner what you’ve got.', entryY:4, exit:{side:'top',pos:5}, next:'extensionA', quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['ex_chief'] },
+  extensionA: { name:'EXTENSION FIELD SITE — Task A', theme:'field', desc:'Room 1 of 4: a real NCEA-style case study, vehicle access at Waimārama Beach. Describe the challenge.', entryY:4, exit:{side:'bottom',pos:6}, next:'extensionB', quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['fx_challenge','fx_evidence'] },
+  extensionB: { name:'EXTENSION FIELD SITE — Task B', theme:'field', desc:'Room 2 of 4: the stakeholders and perspectives behind the Waimārama Beach decision.', entryY:4, exit:{side:'right',pos:3}, next:'extensionC', quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['fx_perspectives','fx_written'] },
+  extensionC: { name:'EXTENSION FIELD SITE — Task C', theme:'field', desc:'Room 3 of 4: choose and justify a decision for Waimārama Beach.', entryY:4, exit:{side:'bottom',pos:4}, next:'extensionFinale', quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['fx_decision','fx_exemplar'] },
+  extensionFinale: { name:'EXTENSION FIELD SITE — Marker\'s Eye', theme:'field', desc:'Room 4 of 4: spot the name, the perspective, and the evidence.', entryY:4, exit:{side:'top',pos:4}, next:'fijiA', quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['fx_highlight'] },
+  fijiA: { name:'PACIFIC FIELD SITE — Task A', theme:'lagoon', desc:'Room 1 of 4: a second real NCEA-style case study, sea level rise in Fiji. Describe the challenge.', entryY:4, exit:{side:'bottom',pos:6}, next:'fijiB', quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['pf_challenge','pf_evidence'] },
+  fijiB: { name:'PACIFIC FIELD SITE — Task B', theme:'lagoon', desc:'Room 2 of 4: the stakeholders and perspectives behind Fiji\'s sea level rise decision.', entryY:4, exit:{side:'right',pos:3}, next:'fijiC', quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['pf_perspectives','pf_written'] },
+  fijiC: { name:'PACIFIC FIELD SITE — Task C', theme:'lagoon', desc:'Room 3 of 4: choose and justify Fiji\'s response to sea level rise.', entryY:4, exit:{side:'top',pos:6}, next:'fijiFinale', quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['pf_decision','pf_exemplar'] },
+  fijiFinale: { name:'PACIFIC FIELD SITE — Marker\'s Eye', theme:'lagoon', desc:'Room 4 of 4: name the LEAST influential viewpoint — the real 2025 exam\'s twist.', entryY:4, exit:null, next:null, quoteIcon:{x:2,y:5}, teachIcon:{x:10,y:2}, npcs:['pf_highlight'] }
 };
-var ZONE_ORDER = ['hq','issue','perspectives','decision','concepts','exam','extension'];
+var ZONE_ORDER = ['hq','issue','perspectives','decision','concepts','exam','extensionA','extensionB','extensionC','extensionFinale','fijiA','fijiB','fijiC','fijiFinale'];
 
 var THEME_COLORS = {
-  academy:{ floor:'#152436', floor2:'#182a3e', wall:'#0a141f' },
-  coast:{ floor:'#123244', floor2:'#153a4c', wall:'#081a24' },
-  plaza:{ floor:'#1a2436', floor2:'#1e2a3c', wall:'#0b1220' },
-  chamber:{ floor:'#241a2e', floor2:'#2a1f36', wall:'#140e1a' },
-  vault:{ floor:'#241c14', floor2:'#2a2118', wall:'#140f0a' },
-  exam:{ floor:'#2a1414', floor2:'#301818', wall:'#160a0a' },
-  field:{ floor:'#132a1e', floor2:'#173222', wall:'#0a170f' }
+  academy:{ floor:'#3a4756', floor2:'#3c4c5c', wall:'#1d2630' },
+  coast:{ floor:'#375261', floor2:'#3a5968', wall:'#1b2c35' },
+  plaza:{ floor:'#3e4756', floor2:'#424c5b', wall:'#1e2431' },
+  chamber:{ floor:'#473e4f', floor2:'#4c4256', wall:'#26212c' },
+  vault:{ floor:'#474039', floor2:'#4c443c', wall:'#26221d' },
+  exam:{ floor:'#4c3939', floor2:'#513c3c', wall:'#281d1d' },
+  field:{ floor:'#384c42', floor2:'#3c5245', wall:'#1d2922' },
+  lagoon:{ floor:'#345959', floor2:'#376161', wall:'#1b3333' }
+};
+/* Purely cosmetic floor decoration, per zone theme — never blocks movement,
+   never interactive, just flavour that nods at the room's topic. */
+var THEME_DECOR = {
+  academy: [ {x:6,y:2,e:'📚'}, {x:10,y:3,e:'🗂️'} ],
+  coast: [ {x:6,y:2,e:'🌊'}, {x:2,y:5,e:'🐚'} ],
+  plaza: [ {x:2,y:4,e:'🏛️'}, {x:10,y:4,e:'🌳'} ],
+  chamber: [ {x:2,y:3,e:'⚖️'}, {x:10,y:3,e:'📜'} ],
+  vault: [ {x:9,y:5,e:'🗝️'}, {x:2,y:2,e:'💎'} ],
+  exam: [ {x:3,y:2,e:'📝'}, {x:9,y:5,e:'⏰'} ],
+  field: [ {x:2,y:2,e:'🚙'}, {x:10,y:5,e:'🌿'} ],
+  lagoon: [ {x:2,y:2,e:'🌴'}, {x:10,y:5,e:'🌊'} ]
 };
 
 /* =========================================================
@@ -647,7 +741,7 @@ var THEME_COLORS = {
    task.type: 'mcq' | 'pick' | 'sequence' | 'match' | 'boss'
 ========================================================= */
 var NPCS = {
-  hq_examiner: { zone:'hq', x:4, y:2, name:'Ranger Kupe', role:'Chief Examiner, NZQA Geography 91935', color:'#e0a530', required:true, hat:'ranger',
+  hq_examiner: { zone:'hq', x:4, y:2, name:'Ranger Kupe', role:'Chief Examiner, NZQA Geography 91935', color:'#e0a530', required:true, hat:'ranger', unlockAfter:'teach_hq',
     intro:[
       "Kia ora, cadet. Standard 91935 asks you to demonstrate understanding of geographic decision-making in Aotearoa New Zealand or the Pacific. Doesn't matter if exam day hands you coastal erosion, a housing crisis, a new mine, or a marae relocation — the shape of a top answer never changes.",
       "Every paper has three tasks. <span class=\"kw\">Task A</span>: what's the issue, and why does it matter? <span class=\"kw\">Task B</span>: who's involved, and how do their <span class=\"kw-good\">perspectives</span> shape the decision? <span class=\"kw\">Task C</span>: what should be done, and why is your choice the best one?",
@@ -664,7 +758,8 @@ var NPCS = {
     intro:[
       "Two things separate a strong answer from a top answer: specific <span class=\"kw\">evidence</span> and correct <span class=\"kw\">geographic terminology</span>, woven in — not just dropped in.",
       "<span class=\"subtitle\">Good evidence</span> is a number, a name, a date, a distance: ‘10,000 low-lying residents’, ‘erosion of up to 4 metres a year at the Clutha Mata-Au’.<br><span class=\"subtitle\">Good terminology</span> sounds like a geographer: <span class=\"kw-good\">perspective, viewpoint, stakeholder, resilience, kaitiakitanga, mitigation</span>.",
-      "And always pull evidence from BOTH resource booklets you're given — markers are checking you've used everything on the table."
+      "And always pull evidence from BOTH resource booklets you're given — markers are checking you've used everything on the table.",
+      "One warning, cadet: evidence is not the same as <span class=\"kw\">quoting</span> the booklet at length. Real examiner reports call out candidates who copy out long slabs of a source and never explain what the quotation actually shows — that wastes time and doesn't demonstrate understanding. Pull out the SHORT, specific detail you need, then explain its relevance in your own words."
     ],
     task:{ type:'pick', prompt:"Pick the TWO statements below that count as usable EVIDENCE (not just an opinion).", pickCount:2,
       cards:[ {text:'Most residents think coastal erosion is a serious problem for the city.', correct:false},
@@ -677,7 +772,8 @@ var NPCS = {
   hq_marker: { zone:'hq', x:6, y:5, name:'The Marker', role:'Assessment Standards (bonus)', color:'#7d93a8', required:false, hat:'clip',
     intro:[
       "Cut scores, cadet: <span class=\"kw\">Not Achieved</span> 0–2, <span class=\"kw\">Achieved</span> 3–4, <span class=\"kw\">Merit</span> 5–6, <span class=\"kw\">Excellence</span> 7–8.",
-      "<span class=\"subtitle\">Achieved</span>outline/describe.<br><span class=\"subtitle\">Merit</span>explain, and discuss how perspectives are considered in decision-making.<br><span class=\"subtitle\">Excellence</span>evaluate the <span class=\"kw-good\">extent to which</span> perspectives and viewpoints inform decision-making — using evidence and terminology that develops the examination, plus an appropriate concept from te ao Māori or the Pacific."
+      "<span class=\"subtitle\">Achieved</span>outline/describe.<br><span class=\"subtitle\">Merit</span>explain, and discuss how perspectives are considered in decision-making.<br><span class=\"subtitle\">Excellence</span>evaluate the <span class=\"kw-good\">extent to which</span> perspectives and viewpoints inform decision-making — using evidence and terminology that develops the examination, plus an appropriate concept from te ao Māori or the Pacific.",
+      "Last thing, cadet, and it costs more candidates than you'd think: <span class=\"kw\">finish the whole paper</span>. Real examiner reports note every year that some Not Achieved results are candidates who simply ran out of time and never completed every task — not because they didn't understand the content. Manage your time across Task A, B AND C; a rushed but complete answer beats a brilliant one that stops halfway."
     ],
     task:{ type:'mcq', prompt:"According to the marking schedule, what does an Excellence answer do that a Merit answer doesn't?",
       options:[ {text:'Describes more perspectives overall, without weighing how much each one actually mattered', correct:false},
@@ -687,12 +783,13 @@ var NPCS = {
       wrongMsg:"Have another look — it's about weighing HOW MUCH influence perspectives had, plus a concept.",
       hint:"Think 'extent to which' and 'concept'." } },
 
-  is_reporter: { zone:'issue', x:4, y:2, name:'Reporter Aria', role:'Field Reporter', color:'#4c8fd6', required:true, hat:'cap',
+  is_reporter: { zone:'issue', x:4, y:2, name:'Reporter Aria', role:'Field Reporter', color:'#4c8fd6', required:true, hat:'cap', unlockAfter:'teach_issue',
     intro:[
       "<span class=\"subtitle\">Task A formula</span>works on literally any topic: (1) Describe the challenge in relation to its <span class=\"kw\">environment</span>, natural and/or cultural. (2) Explain <span class=\"kw\">WHY</span> it's a challenge for the community — who's affected, and how.",
       "Watch me apply it to Dunedin: ‘Coastal erosion is the natural wearing away of land and sand by waves, tides and storms. Along the exposed St Clair–St Kilda coast, the beach can rise and fall by over a metre overnight and up to <span class=\"kw-good\">3.5 metres across a year</span>. This becomes a serious geographic challenge because climate change is bringing more frequent storms and rising sea levels, so erosion outpaces the slower natural recovery (accretion) — leaving the coast less able to defend the <span class=\"kw-good\">10,000 low-lying residents</span> of St Kilda and St Clair behind it.’",
       "Notice: environment named, scale of the process, then WHY it matters — with a number attached. Here's where all this is actually happening along the coast:",
-      DIAGRAM_MAP
+      DIAGRAM_MAP,
+      "One more thing before you move on, cadet — on exam day, <span class=\"kw\">read the actual resource booklet before you name the challenge</span>. Don't assume it from the topic's general theme. Real candidates have lost marks describing the wrong challenge entirely — naming 'sand mining' when the real issue was conflict over beach access, or describing sea level rise in general when the question asked about the specific squeeze it puts on one named place. The booklet always tells you the exact challenge — go find it, don't guess it."
     ],
     task:{ type:'sequence', prompt:"Rebuild a Task A answer about the Clutha Mata-Au river mouth. Click the chunks in the right order.",
       items:[ "Coastal erosion is the natural wearing-away of land by waves, tides and currents.",
@@ -729,7 +826,7 @@ var NPCS = {
       wrongMsg:"Think about what a marker is actually checking for.",
       hint:"Markers reward specific, checkable use of resources." } },
 
-  pv_council: { zone:'perspectives', x:3, y:2, name:'Councillor Rowan', role:'Dunedin City Council', color:'#4c8fd6', required:true, hat:'clip',
+  pv_council: { zone:'perspectives', x:3, y:2, name:'Councillor Rowan', role:'Dunedin City Council', color:'#4c8fd6', required:true, hat:'clip', unlockAfter:'teach_perspectives',
     intro:[
       "“It's a significant recreational asset for the city, but more critically it's an eroding line of defence for some 10,000 low-lying residents. Of great concern — within 15 years, people in many coastal areas may no longer have affordable house insurance. By 2050, at least 10,000 homes in our biggest cities will be effectively uninsurable.” <span class=\"dlg-note\" style=\"margin:0;display:inline\">(paraphrased from testimony by Dunedin's former Mayor, Feb 2022)</span>",
       "Council backs trialling a groyne — hard engineering — despite lengthy, costly consents ($15,000–$250,000). It's a pragmatic call: protect people and property now, while the <span class=\"kw\">insurance risk</span> looms."
@@ -744,7 +841,8 @@ var NPCS = {
   pv_kaitahu: { zone:'perspectives', x:9, y:2, name:'Kaitiaki Aroha', role:'Kāi Tahu', color:'#e0a530', required:true, hat:'cap',
     intro:[
       "The dunes hold <span class=\"kw-good\">taonga</span> — Māori artefacts occasionally uncovered by the erosion. <span class=\"kw\">Kaitiakitanga</span> is our responsibility to guard te taiao, the natural world, for the generations after us.",
-      "So our viewpoint is clear: any decision must stabilise the dunes and protect what they hold — not damage the whenua with intrusive hard engineering."
+      "So our viewpoint is clear: any decision must stabilise the dunes and protect what they hold — not damage the whenua with intrusive hard engineering.",
+      "Notice something, cadet: this single viewpoint is really built from <span class=\"kw-good\">two perspectives held at once</span> — a cultural one (protecting taonga and whakapapa connections to this place) AND an environmental one (dune ecosystems that hold those taonga also happen to be the healthiest natural defence against erosion). A top answer would name both, not just one — that's the compound-perspective insight examiners are looking for."
     ],
     task:{ type:'mcq', prompt:"Which concept from te ao Māori underlies Kāi Tahu's perspective here?",
       options:[ {text:'Kaitiakitanga — guardianship of land and resources for the future', correct:true},
@@ -780,6 +878,8 @@ var NPCS = {
   pv_trainer: { zone:'perspectives', x:6, y:3, name:'Perspective Trainer', role:'Bonus — Practice', color:'#7d93a8', required:false, hat:'cap',
     intro:[
       "Quick drill before you move on:<br><span class=\"subtitle\">Perspective</span>a way of looking at the world (economic, social, environmental, cultural), shaped by values and beliefs.<br><span class=\"subtitle\">Viewpoint</span>the specific opinion that perspective produces on <span class=\"kw\">THIS</span> issue.",
+      "This exact confusion shows up in real NZQA examiner reports, year after year, on totally different topics — some candidates simply cannot show they understand the difference between the two. Don't be one of them: always say which perspective a person holds, THEN what viewpoint it produces.",
+      "Here's a harder trick, worth remembering: real Excellence answers often notice that ONE person's viewpoint is actually built from <span class=\"kw-good\">more than one perspective at once</span> — say, both cultural AND environmental values pulling the same way. Spotting that layering, instead of forcing each stakeholder into a single neat box, is exactly the kind of holistic thinking examiners reward at the top grade."
     ],
     task:{ type:'match', prompt:"Match each stakeholder to their perspective category.",
       colTitles:['STAKEHOLDER','PERSPECTIVE CATEGORY'],
@@ -790,7 +890,7 @@ var NPCS = {
       correctMsg:"All matched — same coastline, four very different lenses.",
       hint:"Think about what each group is most worried about losing." } },
 
-  dc_options: { zone:'decision', x:3, y:2, name:'Options Officer', role:'Decision Chamber', color:'#4c8fd6', required:true, hat:'clip',
+  dc_options: { zone:'decision', x:3, y:2, name:'Options Officer', role:'Decision Chamber', color:'#4c8fd6', required:true, hat:'clip', unlockAfter:'teach_decision',
     intro:[
       "Three options on the table for Dunedin.<br><span class=\"subtitle\">Option A — sea walls &amp; groynes</span>(hard engineering): protects fast, but costly consents ($15k–$250k) and can disrupt natural sand movement.",
       "<span class=\"subtitle\">Option B — dune planting/notching</span>(soft engineering): far cheaper, protects <span class=\"kw-good\">taonga</span>, aligns with <span class=\"kw-good\">kaitiakitanga</span>, gets stronger over time — but slower to build up protection.",
@@ -831,16 +931,16 @@ var NPCS = {
       hint:"Look for evidence, terminology, a concept, and an honest trade-off." } },
   dc_judge: { zone:'decision', x:9, y:5, name:'The Judge', role:'Bonus — Task C, part 4', color:'#7d93a8', required:false, hat:'star',
     intro:[
-      "Task C also asks you to name the <span class=\"kw\">VIEWPOINT</span> that mattered most in your decision — and <span class=\"kw\">justify why</span>."
+      "Task C also asks you to name a <span class=\"kw\">VIEWPOINT</span> and <span class=\"kw\">justify why</span> it mattered — but read the actual question carefully, cadet. Some years it asks for the viewpoint with the <span class=\"kw-good\">MOST</span> influence on the decision. Other years — like the real 2025 paper — it flips, and asks for the viewpoint with the <span class=\"kw-good\">LEAST</span> influence instead. Same skill, opposite direction. Never assume which one you're being asked for."
     ],
     task:{ type:'mcq', prompt:"Which is the strongest way to name the most important viewpoint for Option B?",
       options:[ {text:'“Kāi Tahu’s viewpoint mattered most, because their community has lived on this coastline for longer than anyone else involved.”', correct:false},
                 {text:'“Kāi Tahu’s kaitiakitanga-based viewpoint mattered most, because it carries an obligation to protect taonga and whenua beyond any single storm season.”', correct:true} ],
-      correctMsg:"Correct — naming AND justifying is what earns the mark.",
+      correctMsg:"Correct — naming AND justifying is what earns the mark. And if the question had instead asked for the LEAST influential viewpoint, you'd use the exact same justify-with-evidence structure, just arguing the opposite direction.",
       wrongMsg:"The first option just names it — it doesn't justify WHY.",
-      hint:"Naming isn't enough — you must justify why it mattered most." } },
+      hint:"Naming isn't enough — you must justify why it mattered most (or least, if that's what's asked)." } },
 
-  cv_maori: { zone:'concepts', x:3, y:3, name:'Concept Keeper (Aotearoa)', role:'Bonus — Te Ao Māori', color:'#e0a530', required:false, hat:'cap',
+  cv_maori: { zone:'concepts', x:3, y:3, name:'Concept Keeper (Aotearoa)', role:'Bonus — Te Ao Māori', color:'#e0a530', required:false, hat:'cap', unlockAfter:'teach_concepts',
     intro:[ "Six concepts from <span class=\"kw\">te ao Māori</span> that can lift a Task C answer to Excellence." ],
     task:{ type:'match', prompt:"Match each concept to its real-world example.",
       colTitles:['CONCEPT','REAL-WORLD EXAMPLE'],
@@ -862,15 +962,17 @@ var NPCS = {
               ['Vaka','Pacific climate cooperation'],
               ['Kuleana','Village matai governance'] ],
       correctMsg:"Nicely done — these work just as well for a Pacific case study as the Māori concepts do for an Aotearoa one." } },
-  cv_quiz: { zone:'concepts', x:6, y:5, name:'Quiz Master', role:'Bonus — Quick Recall', color:'#7d93a8', required:false, hat:'star',
-    intro:[ "One last check before the vault closes." ],
-    task:{ type:'mcq', prompt:"Kaitiakitanga is best translated as...",
-      options:[ {text:'Guardianship of land and resources for future generations', correct:true},
-                {text:'A formal gathering held to welcome important visitors', correct:false},
-                {text:'A traditional method used for coastal erosion control', correct:false} ],
-      correctMsg:"Correct.", wrongMsg:"Not quite — think guardianship.", hint:"It's about protecting resources for the future." } },
+  cv_quiz: { zone:'concepts', x:6, y:5, name:'Quiz Master', role:'Bonus — Concept Integration', color:'#7d93a8', required:false, hat:'star',
+    intro:[ "One last check before the vault closes — and it's harder than just defining a word. Being able to recite what kaitiakitanga MEANS is worth very little on its own; Excellence answers actually WEAVE the concept into the specific decision, evidence and stakeholder in front of them." ],
+    task:{ type:'mcq', prompt:"Which sentence actually INTEGRATES the concept of kaitiakitanga into the Dunedin decision, rather than just defining it?",
+      options:[ {text:'“Kaitiakitanga means guardianship of land and resources, protecting them for future generations.”', correct:false},
+                {text:'“Choosing Option B reflects kaitiakitanga, because restoring the dunes protects both the taonga they hold and the whenua itself — the same shared obligation that gives Kāi Tahu’s viewpoint so much weight in this decision.”', correct:true},
+                {text:'“Kaitiakitanga is an important value in te ao Māori that many iwi around New Zealand still practise today.”', correct:false} ],
+      correctMsg:"Correct — it names the concept AND ties it directly to this decision, this evidence, and this stakeholder's weight in the outcome. That's integration, not just recall.",
+      wrongMsg:"The other two only define or generally describe the concept — they never connect it to THIS decision.",
+      hint:"Look for the option that ties the concept to a specific option, place and stakeholder." } },
 
-  ex_chief: { zone:'exam', x:6, y:3, name:'Chief Examiner', role:'Final Assessment', color:'#e0a530', required:true, hat:'ranger',
+  ex_chief: { zone:'exam', x:6, y:3, name:'Chief Examiner', role:'Final Assessment', color:'#e0a530', required:true, hat:'ranger', unlockAfter:'teach_exam',
     intro:[
       "Time to prove it, cadet. Here's a topic you have never studied in this Academy: a real NCEA-style question about the housing crisis on Oʻahu, Hawaiʻi.",
       "<b>Question:</b> “For each individual or group, explain the key perspective(s) that shape their viewpoint in solving the housing crisis on Oʻahu. Include their viewpoint in your discussion.”",
@@ -920,7 +1022,7 @@ var NPCS = {
     }
   },
 
-  fx_challenge: { zone:'extension', x:2, y:2, name:'Field Officer Nia', role:'Extension 1/7 — Task A, Waimārama Beach', color:'#4c8fd6', required:false, hat:'cap',
+  fx_challenge: { zone:'extensionA', x:4, y:3, name:'Field Officer Nia', role:'Extension Task A · 1 of 2 — Waimārama Beach', color:'#4c8fd6', required:false, hat:'cap', unlockAfter:'teach_extensionA',
     intro:[
       "Bonus round, cadet. This is a <span class=\"kw\">real</span> case study: vehicle access at <span class=\"kw\">Waimārama Beach</span>, a small Hawke's Bay coastal settlement of around 230 residents with deep Rangitāne and Ngāti Kahungunu history.",
       "In summer 2023/24, a Ngāti Kahungunu spokesperson blocked vehicle access to part of the beach with limestone boulders — forcing Hastings District Council to decide, long-term, whether vehicles should be allowed on the sand at all.",
@@ -938,7 +1040,7 @@ var NPCS = {
       wrongMsg:"Not quite the right order — describe the setting first, then the triggering event, then why it matters, then the trend.",
       hint:"Setting first, then the event with a number, then why it matters, then the future trend." } },
 
-  fx_evidence: { zone:'extension', x:5, y:2, name:'Field Officer Kahu', role:'Extension 2/7 — Task A, Evidence', color:'#e8622c', required:false, hat:'clip', unlockAfter:'fx_challenge',
+  fx_evidence: { zone:'extensionA', x:8, y:3, name:'Field Officer Kahu', role:'Extension Task A · 2 of 2 — Evidence', color:'#e8622c', required:false, hat:'clip', unlockAfter:'fx_challenge',
     intro:[
       "Good — the shape's right. Now, a Task A answer is only as strong as its <span class=\"kw\">evidence</span>. An opinion about the beach is easy to write; a checkable number or named statistic is what actually earns marks.",
       "Here's the raw data file on Waimārama again — the class's own Surf Life Saving Club records, plus the dune erosion measurement from the resource booklet."
@@ -952,7 +1054,7 @@ var NPCS = {
       wrongMsg:"Close — evidence needs a number, date, or named measurement attached, not just a feeling about the issue.",
       hint:"Evidence has a number or a date attached to it." } },
 
-  fx_perspectives: { zone:'extension', x:8, y:2, name:'Field Officer Reo', role:'Extension 3/7 — Task B, Waimārama Beach', color:'#e0a530', required:false, hat:'cap', unlockAfter:'fx_evidence',
+  fx_perspectives: { zone:'extensionB', x:4, y:3, name:'Field Officer Reo', role:'Extension Task B · 1 of 2 — Waimārama Beach', color:'#e0a530', required:false, hat:'cap', unlockAfter:['fx_evidence','teach_extensionB'],
     intro:[
       "Four real people, four different views on the Waimārama vehicle access decision. This time nobody's going to tell you which <span class=\"kw\">perspective</span> each one holds — you have to work it out from what they actually say and do, same as a real exam resource booklet.",
       "<span class=\"subtitle\">Jason and Kelly Smith</span>They surfcast from the beach and rely on their vehicle to carry heavy gear down to the water. Losing access, they say, would add real cost and hassle to something that's part of their weekly routine.",
@@ -969,7 +1071,7 @@ var NPCS = {
       correctMsg:"All matched — the same four-perspective spread (economic / cultural / social / environmental) shows up again and again in NCEA decision-making topics.",
       hint:"Who's worried about cost and gear? Land and dune damage? Community culture? Species and climate?" } },
 
-  fx_written: { zone:'extension', x:11, y:2, name:'Field Officer Tui', role:'Extension 4/7 — Task B, Written Response', color:'#c1503f', required:false, hat:'hivis', unlockAfter:'fx_perspectives',
+  fx_written: { zone:'extensionB', x:8, y:3, name:'Field Officer Tui', role:'Extension Task B · 2 of 2 — Written Response', color:'#c1503f', required:false, hat:'hivis', unlockAfter:'fx_perspectives',
     intro:[
       "Multiple choice only gets you so far, cadet — real exams want a written paragraph. Your turn to write one.",
       "Use what you now know about the <span class=\"kw\">Ngāti Kahungunu spokesperson</span> and <span class=\"kw\">Peter Johnston</span> to explain both of their perspectives and viewpoints in a short paragraph."
@@ -987,7 +1089,7 @@ var NPCS = {
       model:"The Ngāti Kahungunu spokesperson's perspective is cultural and indigenous, rooted in guardianship of land the iwi owns; their viewpoint is that vehicles should be permanently banned, because continued vehicle use damages the dune system and puts children playing nearby at risk. Peter Johnston's perspective is instead environmental; his viewpoint is also to ban vehicles completely, because he is worried about disturbance to nesting species and about climate change accelerating erosion along this stretch of coast. Although they start from different values — one cultural, one environmental — both perspectives arrive at the same viewpoint on this issue.",
       correctMsg:"Logged. Notice how two very different perspectives can still land on the same viewpoint — that's a genuinely Excellence-level observation to make in a real answer." } },
 
-  fx_decision: { zone:'extension', x:2, y:5, name:'Field Officer Manu', role:'Extension 5/7 — Task C, Waimārama Beach', color:'#4f9e6a', required:false, hat:'clip', unlockAfter:'fx_written',
+  fx_decision: { zone:'extensionC', x:4, y:3, name:'Field Officer Manu', role:'Extension Task C · 1 of 2 — Waimārama Beach', color:'#4f9e6a', required:false, hat:'clip', unlockAfter:['fx_written','teach_extensionC'],
     intro:[
       "Three options were on the table for Hastings District Council: <span class=\"subtitle\">Option 1</span>no change, vehicles keep partial access. <span class=\"subtitle\">Option 2</span>a permanent, complete vehicle ban. <span class=\"subtitle\">Option 3</span>remove all vehicle bans.",
       "Which sentence actually sounds like a top Task C justification?"
@@ -999,7 +1101,7 @@ var NPCS = {
       wrongMsg:"The stronger option names specific stakeholders, uses evidence, and admits a trade-off — which one does that?",
       hint:"Look for named stakeholders, specific evidence, and an honest trade-off." } },
 
-  fx_exemplar: { zone:'extension', x:5, y:5, name:'Field Officer Waimārie', role:'Extension 6/7 — Task C, Exemplar Reorder', color:'#4c8fd6', required:false, hat:'ranger', unlockAfter:'fx_decision',
+  fx_exemplar: { zone:'extensionC', x:8, y:3, name:'Field Officer Waimārie', role:'Extension Task C · 2 of 2 — Exemplar Reorder', color:'#4c8fd6', required:false, hat:'ranger', unlockAfter:'fx_decision',
     intro:[
       "One more Task C drill, cadet — this one paraphrases the shape of a genuine top-scoring answer about Waimārama Beach, judging Option 2.",
       "Put these five sentences back into the correct Excellence order."
@@ -1014,7 +1116,7 @@ var NPCS = {
       wrongMsg:"Not quite — start with the verdict, then support with perspectives, then another perspective, then an honest limitation, then conclude.",
       hint:"Verdict first, honest limitation second-to-last, conclusion last." } },
 
-  fx_highlight: { zone:'extension', x:8, y:5, name:'Field Officer Aroha', role:'Extension 7/7 — Exemplar Highlighting', color:'#7d93a8', required:false, hat:'star', unlockAfter:'fx_exemplar',
+  fx_highlight: { zone:'extensionFinale', x:6, y:3, name:'Field Officer Aroha', role:'Extension Marker\'s Eye — Exemplar Highlighting', color:'#7d93a8', required:false, hat:'star', unlockAfter:['fx_exemplar','teach_extensionFinale'],
     intro:[
       "Last bonus task. Below is a <span class=\"kw\">paraphrased</span> exemplar-style paragraph about Peter Johnston's perspective on Waimārama Beach.",
       "Pick a category below, then click the matching words or phrases in the paragraph to tag them. A strong Task B paragraph names people, names their perspective, and backs it up with real evidence — let's see if you can spot all three."
@@ -1039,7 +1141,145 @@ var NPCS = {
         { text:', protecting the dune system for the long term matters more than the convenience of driving straight onto the sand.', cat:null }
       ],
       correctMsg:"Nicely tagged — a strong Task B paragraph always makes it easy for a marker to spot the name, the perspective, and the evidence.",
-      hint:"There are 3 names, 1 perspective, and 1 statistic to find." } }
+      hint:"There are 3 names, 1 perspective, and 1 statistic to find." } },
+
+  pf_challenge: { zone:'fijiA', x:4, y:3, name:'Field Officer Sera', role:'Pacific Field Site Task A · 1 of 2 — Fiji Sea Level Rise', color:'#4c8fd6', required:false, hat:'cap', unlockAfter:'teach_fijiA',
+    intro:[
+      "A second bonus round, cadet — another real NCEA case study, this time from the Pacific: <span class=\"kw\">sea level rise in Fiji</span>. Fiji is home to around 933,000 people, and tourism makes up roughly 40% of its GDP — both heavily dependent on the coast staying where it is.",
+      "Scientists project sea levels around Fiji could rise by roughly <span class=\"kw-good\">2 to 4 metres by 2100</span>, depending on the emissions scenario. This isn't hypothetical: the village of Vunidogoloa was already relocated inland in 2014 because the rising sea made the old site unliveable, and dozens more villages are now considered at risk.",
+      "It's a serious geographic challenge because so many communities — and the national economy — depend on a coastline that's retreating beneath them, and the pace of loss varies sharply from place to place, which is exactly what makes deciding how to respond so difficult.",
+      DIAGRAM_FIJI_SLR,
+      "Work this field site in order, cadet — Task A, then Task B, then Task C, then the marker's-eye finale, same as Waimārama."
+    ],
+    task:{ type:'sequence', prompt:"Rebuild a Task A answer about Togoru village on Fiji's Coral Coast. Click the chunks in the right order.",
+      items:[ "Sea level rise is the ongoing increase in average ocean height, driven by melting ice sheets and the thermal expansion of warming seawater.",
+              "At Togoru village on Fiji's Coral Coast, this rise is eroding the shoreline at up to 1.5 metres a year.",
+              "This rate of loss threatens homes, gravesites and agricultural land that the community has relied on for generations.",
+              "Because global emissions are still rising, this challenge is expected to accelerate rather than slow down." ],
+      correctMsg:"That's the Task A shape again, on a Pacific topic: define the process, give its scale with evidence, then explain why it matters, then the trend.",
+      wrongMsg:"Not quite the right order — define the process first, then its scale, then why it matters, then the trend.",
+      hint:"Definition first, then a number, then who it threatens, then the trend." } },
+
+  pf_evidence: { zone:'fijiA', x:8, y:3, name:'Field Officer Mele', role:'Pacific Field Site Task A · 2 of 2 — Evidence', color:'#e8622c', required:false, hat:'clip', unlockAfter:'pf_challenge',
+    intro:[
+      "Good — the shape's right. Now strengthen it with <span class=\"kw\">evidence</span>, cadet — real numbers from the resource booklet, not general impressions.",
+      "Here's the data file on Fiji again."
+    ],
+    task:{ type:'pick', prompt:"Pick the TWO statements below that count as usable EVIDENCE for a Task A answer about sea level rise in Fiji.", pickCount:2,
+      cards:[ {text:'A lot of Fijians are probably worried about what will happen to their homes.', correct:false},
+              {text:'Scientists project sea levels around Fiji could rise by roughly 2 to 4 metres by 2100.', correct:true},
+              {text:'Coastal life in Fiji will likely look very different by the end of the century.', correct:false},
+              {text:'Togoru village has lost coastline at a rate of up to 1.5 metres a year.', correct:true} ],
+      correctMsg:"Exactly — specific, checkable numbers are what markers mean by 'evidence', on any topic, in any country.",
+      wrongMsg:"Close — evidence needs a number, date, or named measurement attached, not just a general impression.",
+      hint:"Evidence has a number or a date attached to it." } },
+
+  pf_perspectives: { zone:'fijiB', x:4, y:3, name:'Field Officer Josefa', role:'Pacific Field Site Task B · 1 of 2 — Fiji Stakeholders', color:'#e0a530', required:false, hat:'cap', unlockAfter:['pf_evidence','teach_fijiB'],
+    intro:[
+      "Four real voices in Fiji's sea level rise decision. Same rule as before, cadet — nobody's going to tell you which perspective each one holds; work it out from what they actually say and do.",
+      "<span class=\"subtitle\">PM Sitiveni Rabuka</span>Speaking for the national government, he stresses the scale of relocation costs already being negotiated with international partners, and the need for one coordinated, nationwide response rather than village-by-village decisions.",
+      "<span class=\"subtitle\">Lani Bola</span>A community member who talks about the vanua — the deep, spiritual relationship between her people, their land and their ancestors — and worries that moving away from ancestral ground would mean losing something no relocation payment could replace.",
+      "<span class=\"subtitle\">Local climate change campaigners</span>Point to the mangrove forests that have already been shown to cut wave height by up to 31% where they've been restored, and argue that protecting and rebuilding natural ecosystems is both the cheapest and most sustainable long-term response.",
+      "<span class=\"subtitle\">Town councils</span>Focused on keeping tourism revenue and essential services running, and worried about the cost of any major infrastructure project landing on ratepayers and local budgets."
+    ],
+    task:{ type:'match', prompt:"Match each Fiji stakeholder to their perspective.",
+      colTitles:['STAKEHOLDER','PERSPECTIVE'],
+      pairs:[ ['PM Sitiveni Rabuka','Political — national policy, funding and international negotiation'],
+              ['Lani Bola','Cultural / spiritual — ancestral connection to the vanua'],
+              ['Local climate change campaigners','Environmental — ecosystem protection and long-term sustainability'],
+              ['Town councils','Economic — tourism revenue and infrastructure cost'] ],
+      correctMsg:"All matched — political, cultural, environmental and economic: the same spread of perspectives shows up again and again, just with different names attached.",
+      hint:"Who talks about funding and negotiation? Ancestral connection? Ecosystems? Ratepayers and tourism?" } },
+
+  pf_written: { zone:'fijiB', x:8, y:3, name:'Field Officer Ana', role:'Pacific Field Site Task B · 2 of 2 — Written Response', color:'#c1503f', required:false, hat:'hivis', unlockAfter:'pf_perspectives',
+    intro:[
+      "Your turn to write, cadet — and this time, put the <span class=\"kw-good\">compound-perspective insight</span> into practice.",
+      "Use what you now know about <span class=\"kw\">Lani Bola</span> to explain that her viewpoint is shaped by more than one perspective at once — and explain the <span class=\"kw\">town councils'</span> perspective and viewpoint too."
+    ],
+    task:{ type:'written',
+      prompt:"Write a short Task B paragraph — 3 to 5 sentences — explaining Lani Bola's perspective(s) AND the town councils' perspective, including each one's viewpoint on how Fiji should respond to sea level rise.",
+      placeholder:"e.g. Lani Bola's perspective is shaped by both... her viewpoint is to... The town councils' perspective is instead... their viewpoint is to...",
+      checks:[
+        { label:"Names Lani Bola", any:['lani','bola'] },
+        { label:"Names the town councils", any:['council'] },
+        { label:"Uses the word 'perspective' or 'viewpoint'", any:['perspective','viewpoint'] },
+        { label:"Explains WHY with a linking word (because / since / as)", any:['because','since',' as ','due to','so that'] },
+        { label:"Developed enough to be a real paragraph (3+ sentences)", minChars:120 }
+      ],
+      model:"Lani Bola's viewpoint is shaped by both a cultural and a social perspective at once; her viewpoint is to prioritise nature-based defences and, where possible, staying on ancestral land, because the vanua — her people's spiritual connection to that land — cannot simply be replaced by relocating elsewhere. The town councils' perspective is instead primarily economic; their viewpoint is to protect existing tourism infrastructure and township services first, because losing that revenue would damage the wider local economy far beyond the coastline itself.",
+      correctMsg:"Logged. Notice how Lani Bola's single viewpoint draws on two perspectives held together — that's the compound-perspective insight real Excellence answers reach for." } },
+
+  pf_decision: { zone:'fijiC', x:4, y:3, name:'Field Officer Tomasi', role:'Pacific Field Site Task C · 1 of 2 — Fiji Options', color:'#4f9e6a', required:false, hat:'clip', unlockAfter:['pf_written','teach_fijiC'],
+    intro:[
+      "Three options were on the table for Fiji's coastal communities: <span class=\"subtitle\">Option 1</span>relocation inland. <span class=\"subtitle\">Option 2</span>nature-based defences, such as mangrove restoration. <span class=\"subtitle\">Option 3</span>man-made defences, such as sea walls.",
+      "Which sentence actually sounds like a top Task C justification?"
+    ],
+    task:{ type:'mcq', prompt:"Which is the STRONGER Excellence-level justification for a decision facing sea level rise in Fiji?",
+      options:[ {text:'“Option 2 is clearly the best choice, because nature-based solutions like mangroves are a popular, environmentally friendly option that most climate campaigners strongly support.”', correct:false},
+                {text:'“Option 2 is the strongest overall choice because restored mangroves have already been shown to cut wave height by up to 31%, directly supporting the environmental perspective of local campaigners and Lani Bola’s wish to remain on ancestral land, even though it would not fully protect town infrastructure the way a sea wall or full relocation might.”', correct:true} ],
+      correctMsg:"Yes — it names a choice, uses specific evidence and named perspectives, AND honestly weighs a trade-off. That's evaluating the extent to which perspectives shaped the decision, not just describing them.",
+      wrongMsg:"The stronger option names specific evidence and perspectives, and admits a trade-off — which one does that?",
+      hint:"Look for named evidence, named perspectives, and an honest trade-off." } },
+
+  pf_exemplar: { zone:'fijiC', x:8, y:3, name:'Field Officer Litia', role:'Pacific Field Site Task C · 2 of 2 — Exemplar Reorder', color:'#4c8fd6', required:false, hat:'ranger', unlockAfter:'pf_decision',
+    intro:[
+      "One more Task C drill, cadet — this one paraphrases the shape of the real 2025 Excellence exemplar for this exact Fiji question.",
+      "Put these five sentences back into the correct Excellence order."
+    ],
+    task:{ type:'sequence', prompt:"Reorder these five sentences into the correct Task C paragraph order.",
+      items:[ "Option 2, nature-based defences such as mangrove restoration, is the most justifiable response, because it achieves the strongest integration of environmental, cultural and economic perspectives of the three options available.",
+              "By restoring mangrove forests shown to reduce wave height by up to 31%, this option directly supports the environmental perspective of local climate change campaigners, while also allowing communities like Lani Bola's to remain connected to the vanua rather than being permanently relocated.",
+              "It also partially reassures town councils, since protecting the natural coastline helps sustain the tourism industry so much of the local economy depends on.",
+              "However, the extent to which Option 2 addresses PM Rabuka's concern for a fast, nationally coordinated response is limited, since mangrove restoration takes years to mature and cannot fully protect communities already losing over a metre of coastline a year.",
+              "Option 2 is therefore the strongest medium-term decision, weighing environmental, cultural and economic perspectives together, even though full relocation may ultimately be unavoidable for the most severely affected villages." ],
+      correctMsg:"That's the Excellence shape once more, transferred to a completely new Pacific topic: verdict, support, another perspective, an honest limitation, then a concluding judgement.",
+      wrongMsg:"Not quite — start with the verdict, then support, then another perspective, then an honest limitation, then conclude.",
+      hint:"Verdict first, honest limitation second-to-last, conclusion last." } },
+
+  pf_highlight: { zone:'fijiFinale', x:6, y:3, name:'Field Officer Vika', role:'Pacific Field Site Marker\'s Eye — Exemplar Highlighting', color:'#7d93a8', required:false, hat:'star', unlockAfter:['pf_exemplar','teach_fijiFinale'],
+    intro:[
+      "Last bonus task on this field site, cadet — and it's the flipped version of the skill you practised at Dunedin. The real 2025 exam didn't ask for the MOST influential viewpoint on this topic. It asked for the <span class=\"kw\">LEAST</span>.",
+      "Below is a paraphrased exemplar-style paragraph naming the least influential viewpoint in Fiji's sea level rise decision. Tag every NAME, PERSPECTIVE and STATISTIC you can find."
+    ],
+    task:{ type:'highlight',
+      prompt:"Tag every NAME, PERSPECTIVE, and STATISTIC in this paragraph, then check your highlights.",
+      categories:[
+        { key:'name', label:'Name', color:'#e0a530' },
+        { key:'perspective', label:'Perspective', color:'#4c8fd6' },
+        { key:'stat', label:'Statistic', color:'#4f9e6a' }
+      ],
+      segments:[
+        { text:'PM Sitiveni Rabuka', cat:'name' },
+        { text:"'s ", cat:null },
+        { text:'political perspective', cat:'perspective' },
+        { text:' can be argued as the LEAST influential viewpoint on ground-level decisions about Fiji\'s sea level rise, despite his national profile. His viewpoint — that a single, centrally coordinated national relocation policy is the way forward — operates at a broad policy level, and rarely engages directly with the specific, holistic mix of concerns closer to affected communities, such as ', cat:null },
+        { text:'Lani Bola', cat:'name' },
+        { text:'\'s connection to the vanua, or the ', cat:null },
+        { text:'31%', cat:'stat' },
+        { text:' wave reduction achieved by local mangrove restoration. For this reason, decisions actually made on the ground at places like Togoru, where erosion is already reaching ', cat:null },
+        { text:'1.5 metres a year', cat:'stat' },
+        { text:', are shaped far more by local and cultural perspectives than by national political ones.', cat:null }
+      ],
+      correctMsg:"Nicely tagged — naming the LEAST influential viewpoint uses exactly the same skill as naming the most influential one: name it, name the perspective behind it, and back your reasoning with evidence.",
+      hint:"There are 2 names, 1 perspective, and 2 statistics to find." } },
+
+  /* Teach Me icon stub entries — name-only, used only so the locked-message
+     code (NPCS[unmet[0]].name) resolves when a task is gated behind a
+     room's Teach Me icon. These are never added to any zone.npcs array. */
+  teach_hq: { name:'the 📘 Teach Me icon' },
+  teach_issue: { name:'the 📘 Teach Me icon' },
+  teach_perspectives: { name:'the 📘 Teach Me icon' },
+  teach_decision: { name:'the 📘 Teach Me icon' },
+  teach_concepts: { name:'the 📘 Teach Me icon' },
+  teach_exam: { name:'the 📘 Teach Me icon' },
+  teach_extensionA: { name:'the 📘 Teach Me icon' },
+  teach_extensionB: { name:'the 📘 Teach Me icon' },
+  teach_extensionC: { name:'the 📘 Teach Me icon' },
+  teach_extensionFinale: { name:'the 📘 Teach Me icon' },
+  teach_fijiA: { name:'the 📘 Teach Me icon' },
+  teach_fijiB: { name:'the 📘 Teach Me icon' },
+  teach_fijiC: { name:'the 📘 Teach Me icon' },
+  teach_fijiFinale: { name:'the 📘 Teach Me icon' }
 };
 
 /* Cache: full ordered list of every NPC id, for progress counts */
@@ -1053,7 +1293,14 @@ var CHECKLIST_ITEMS = [
   { zone:'decision', title:'Justify a decision (Task C)', desc:'Choose, argue, and name the key viewpoint.' },
   { zone:'concepts', title:'Learn key concepts (bonus)', desc:'Māori and Pacific concepts for Excellence.' },
   { zone:'exam', title:'Pass the Final Assessment', desc:'Apply the method to a topic you’ve never seen.' },
-  { zone:'extension', title:'Extension field site (bonus)', desc:'A real case study: vehicle access at Waimārama Beach.' }
+  { zone:'extensionA', title:'Extension field site — Task A (bonus)', desc:'A real case study: describe the challenge at Waimārama Beach.' },
+  { zone:'extensionB', title:'Extension field site — Task B (bonus)', desc:'Perspectives behind the Waimārama Beach decision.' },
+  { zone:'extensionC', title:'Extension field site — Task C (bonus)', desc:'Justify a decision for Waimārama Beach.' },
+  { zone:'extensionFinale', title:'Extension field site — Marker\'s eye (bonus)', desc:'Spot the name, perspective and evidence.' },
+  { zone:'fijiA', title:'Pacific field site — Task A (bonus)', desc:'A second real case study: describe sea level rise in Fiji.' },
+  { zone:'fijiB', title:'Pacific field site — Task B (bonus)', desc:'Perspectives behind Fiji\'s sea level rise decision.' },
+  { zone:'fijiC', title:'Pacific field site — Task C (bonus)', desc:'Justify Fiji\'s response to sea level rise.' },
+  { zone:'fijiFinale', title:'Pacific field site — Marker\'s eye (bonus)', desc:'Name the LEAST influential viewpoint.' }
 ];
 
 /* =========================================================
@@ -1158,18 +1405,36 @@ function shadeColor(hex, pct){
 
 function currentZone(){ return ZONES[state.zone]; }
 
+/* A zone's exit door can sit on any of the four walls now — not just the right
+   wall. exit:{side:'right'|'left'|'top'|'bottom', pos} where pos is a ROW
+   (1..ROWS-2) for a left/right door, or a COLUMN (1..COLS-2) for a top/bottom
+   door. Returns the border tile {x,y} for that door, or null if the zone has
+   no exit (a terminal zone). */
+function exitTile(z){
+  var ex = ZONES[z].exit;
+  if(!ex) return null;
+  if(ex.side==='right') return {x:COLS-1, y:ex.pos};
+  if(ex.side==='left') return {x:0, y:ex.pos};
+  if(ex.side==='bottom') return {x:ex.pos, y:ROWS-1};
+  if(ex.side==='top') return {x:ex.pos, y:0};
+  return null;
+}
 function tileIsWall(z, x, y){
   if(x<=0 || x>=COLS-1 || y<=0 || y>=ROWS-1){
     var zo = ZONES[z];
     if(x===0 && y===zo.entryY) return false;
-    if(x===COLS-1 && y===zo.exitY) return false;
+    var et = exitTile(z);
+    if(et && x===et.x && y===et.y) return false;
     return true;
   }
   return false;
 }
 function objAt(z,x,y){
   if(sirenState.zone===z && sirenState.x===x && sirenState.y===y) return 'THE_SIREN';
+  if(sniperState.zone===z && sniperState.x===x && sniperState.y===y) return 'THE_SNIPER';
   var zo = ZONES[z];
+  if(zo.quoteIcon && zo.quoteIcon.x===x && zo.quoteIcon.y===y) return 'QUOTE_ICON';
+  if(zo.teachIcon && zo.teachIcon.x===x && zo.teachIcon.y===y) return 'TEACH_ICON';
   var npc = null;
   zo.npcs.forEach(function(id){ var n = NPCS[id]; if(n.x===x && n.y===y) npc = id; });
   return npc;
@@ -1178,7 +1443,8 @@ function isExitOpen(z){
   return state.preview || zoneComplete(z);
 }
 function tileBlocked(z,x,y){
-  if(x===COLS-1 && y===ZONES[z].exitY){
+  var et = exitTile(z);
+  if(et && x===et.x && y===et.y){
     return !isExitOpen(z);
   }
   if(tileIsWall(z,x,y)) return true;
@@ -1188,6 +1454,7 @@ function tileBlocked(z,x,y){
 
 function render(){
   var theme = THEME_COLORS[currentZone().theme];
+  var et = exitTile(state.zone);
   ctx.clearRect(0,0,canvas.width,canvas.height);
   for(var y=0;y<ROWS;y++){
     for(var x=0;x<COLS;x++){
@@ -1195,7 +1462,7 @@ function render(){
       if(tileIsWall(state.zone,x,y)){
         ctx.fillStyle = theme.wall;
         ctx.fillRect(px,py,TILE,TILE);
-      } else if(x===COLS-1 && y===currentZone().exitY){
+      } else if(et && x===et.x && y===et.y){
         ctx.fillStyle = isExitOpen(state.zone) ? '#2a5c3a' : '#5c2a2a';
         ctx.fillRect(px,py,TILE,TILE);
         ctx.strokeStyle = isExitOpen(state.zone) ? '#4f9e6a' : '#c1503f';
@@ -1212,6 +1479,8 @@ function render(){
       ctx.strokeRect(px,py,TILE,TILE);
     }
   }
+  var decor = THEME_DECOR[currentZone().theme];
+  if(decor){ decor.forEach(function(d){ drawDecor(d.x, d.y, d.e); }); }
   currentZone().npcs.forEach(function(id){
     var n = NPCS[id];
     var cx = n.x*TILE+TILE/2, cy = n.y*TILE+TILE/2;
@@ -1222,7 +1491,7 @@ function render(){
       ctx.beginPath(); ctx.arc(cx+10, cy-20, 5, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = '#0a1a0f'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
       ctx.fillText('✓', cx+10, cy-17);
-    } else if(n.unlockAfter && !state.done[n.unlockAfter]){
+    } else if(isNpcLocked(id)){
       ctx.font = '11px sans-serif'; ctx.textAlign='center';
       ctx.fillText('🔒', cx, cy-22);
     } else {
@@ -1233,6 +1502,15 @@ function render(){
   });
   if(sirenState.zone === state.zone){
     drawSirenNpc(sirenState.x, sirenState.y);
+  }
+  if(sniperState.zone === state.zone){
+    drawSniperNpc(sniperState.x, sniperState.y);
+  }
+  if(currentZone().quoteIcon){
+    drawQuoteIcon(currentZone().quoteIcon.x, currentZone().quoteIcon.y);
+  }
+  if(currentZone().teachIcon){
+    drawTeachIcon(currentZone().teachIcon.x, currentZone().teachIcon.y);
   }
   var bobP = REDUCED_MOTION ? 0 : (isWalking ? Math.abs(Math.sin(walkAnimT*0.25))*-2 : 0);
   drawCharacter(state.x*TILE+TILE/2, state.y*TILE+TILE/2, '#3ad6c4', 'explorer', bobP, isWalking ? walkAnimT*0.35 : 0);
@@ -1292,6 +1570,77 @@ function drawSirenNpc(x,y){
   ctx.textAlign = 'center';
   ctx.fillText('⚠', x*TILE+TILE/2, y*TILE-2);
 }
+function drawQuoteIcon(x,y){
+  var cx = x*TILE+TILE/2, cy = y*TILE+TILE/2;
+  var pulse = REDUCED_MOTION ? 0.5 : (0.5+0.5*Math.sin(animT*0.15));
+  var glowR = 10+pulse*9;
+  var grad = ctx.createRadialGradient(cx,cy,1,cx,cy,glowR);
+  grad.addColorStop(0,'rgba(255,206,107,'+(0.3+pulse*0.55).toFixed(2)+')');
+  grad.addColorStop(1,'rgba(255,206,107,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(cx,cy,glowR,0,Math.PI*2); ctx.fill();
+  ctx.save();
+  ctx.globalAlpha = REDUCED_MOTION ? 1 : (0.55+pulse*0.45);
+  ctx.font = (14+pulse*3).toFixed(1) + 'px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('💡', cx, cy+1);
+  ctx.restore();
+  ctx.textBaseline = 'alphabetic';
+}
+function drawTeachIcon(x,y){
+  var cx = x*TILE+TILE/2, cy = y*TILE+TILE/2;
+  var pulse = REDUCED_MOTION ? 0.5 : (0.5+0.5*Math.sin(animT*0.05));
+  var glowR = 11+pulse*3;
+  var grad = ctx.createRadialGradient(cx,cy,1,cx,cy,glowR);
+  grad.addColorStop(0,'rgba(79,158,106,'+(0.45+pulse*0.25).toFixed(2)+')');
+  grad.addColorStop(1,'rgba(79,158,106,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(cx,cy,glowR,0,Math.PI*2); ctx.fill();
+  ctx.font = '16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('📘', cx, cy+1);
+  ctx.textBaseline = 'alphabetic';
+}
+function drawDecor(x,y,emoji){
+  var cx = x*TILE+TILE/2, cy = y*TILE+TILE/2;
+  ctx.font = '15px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.globalAlpha = 0.85;
+  ctx.fillText(emoji, cx, cy+1);
+  ctx.globalAlpha = 1;
+  ctx.textBaseline = 'alphabetic';
+}
+function drawSniperNpc(x,y){
+  var cx = x*TILE+TILE/2, cy = y*TILE+TILE/2+8;
+  var pulse = REDUCED_MOTION ? 0.5 : (0.5+0.5*Math.sin(animT*0.22));
+  var flash = pulse > 0.5;
+  var glowR = 15+pulse*7;
+  var grad = ctx.createRadialGradient(cx,cy,2,cx,cy,glowR);
+  grad.addColorStop(0,'rgba(70,230,110,'+(0.45+pulse*0.35).toFixed(2)+')');
+  grad.addColorStop(1,'rgba(70,230,110,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(cx,cy,glowR,0,Math.PI*2); ctx.fill();
+  if(sniperState.aiming){
+    ctx.save();
+    ctx.strokeStyle = 'rgba(70,230,110,.75)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5,5]);
+    ctx.beginPath();
+    if(sniperState.y === state.y){ ctx.moveTo(0, cy); ctx.lineTo(COLS*TILE, cy); }
+    else if(sniperState.x === state.x){ ctx.moveTo(cx, 0); ctx.lineTo(cx, ROWS*TILE); }
+    ctx.stroke();
+    ctx.restore();
+  }
+  var col = flash ? '#46e66e' : '#1c4a2c';
+  drawCharacter(cx, cy, col, 'hood', 0, 0);
+  ctx.fillStyle = '#eafff0';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🎯', x*TILE+TILE/2, y*TILE-2);
+}
 function drawFacingArrow(){
   var off = facingOffsets[state.dir];
   var cx = (state.x+off[0])*TILE + TILE/2, cy = (state.y+off[1])*TILE + TILE/2;
@@ -1316,8 +1665,18 @@ function tryMove(dx,dy,dir){
   if(!tileBlocked(state.zone, nx, ny)){
     state.x = nx; state.y = ny;
     isWalking = true; walkAnimT = 0;
-    if(nx===COLS-1 && ny===currentZone().exitY && isExitOpen(state.zone)){
+    if(sirenCooldown > 0) sirenCooldown--;
+    if(sniperCooldown > 0) sniperCooldown--;
+    var et = exitTile(state.zone);
+    if(et && nx===et.x && ny===et.y && isExitOpen(state.zone)){
       goNextZone();
+    } else {
+      maybeRoamSpawnSiren();
+      advanceSiren();
+      if(!dialogOpen){
+        maybeRoamSpawnSniper();
+        advanceSniper();
+      }
     }
   }
   render();
@@ -1330,6 +1689,7 @@ function goNextZone(){
   state.x = 1; state.y = ZONES[next].entryY;
   state.dir = 'right';
   maybeSpawnSiren(next);
+  maybeSpawnSniper(next);
   updateZoneBanner();
   updateJournal();
   updateMapTrack();
@@ -1342,23 +1702,32 @@ function interact(){
   var tx = state.x+off[0], ty = state.y+off[1];
   var id = objAt(state.zone, tx, ty);
   if(id === 'THE_SIREN'){ openSirenEncounter(); }
+  else if(id === 'THE_SNIPER'){ showToast('Stay out of his sightline — he fires on his own.'); }
+  else if(id === 'QUOTE_ICON'){ openQuoteIcon(); }
+  else if(id === 'TEACH_ICON'){ openTeachIcon(); }
   else if(id){ openNpc(id); }
   else { showToast('Nothing to talk to there.'); }
 }
 
 /* =========================================================
-   THE SIREN — a random, high-stakes roaming bonus encounter.
-   Appears sometimes when you enter a zone, flashing red.
-   Get its question wrong and it takes a chunk of your points,
-   even into the negatives. Get it right and it pays out.
-   It is entirely optional and never blocks an exit.
+   THE SIREN — a roaming hazard that actively hunts you down.
+   Appears often, flashing red, and steps toward you every time
+   you move. If it catches you (gets adjacent), you're forced to
+   answer a question on the spot — get it wrong and it takes a
+   chunk of your points, even into the negatives; get it right
+   and it pays out instead. It never blocks an exit — the only
+   way to avoid it is to dodge it on foot.
 ========================================================= */
-var SIREN_ZONES = ['issue','perspectives','decision','concepts','extension'];
-var SIREN_SPAWN_CHANCE = 0.35;
-var SIREN_PENALTY = 100;
+var SIREN_ZONES = ['issue','perspectives','decision','concepts','extensionA','extensionB','extensionC','fijiA','fijiB','fijiC'];
+var SIREN_SPAWN_CHANCE = 0.6;
+var SIREN_ROAM_SPAWN_CHANCE = 0.05;
+var SIREN_CATCH_DIST = 1;
+var SIREN_COOLDOWN_STEPS = 6;
+var SIREN_PENALTY = 50;
 var SIREN_REWARD_COINS = 20;
 var SIREN_REWARD_XP = 10;
 var sirenState = { zone:null, x:null, y:null, question:null };
+var sirenCooldown = 0;
 var SIREN_QUESTIONS = [
   { q:'Which command word asks you to judge HOW MUCH influence something had, not just describe it?', options:['Outline','Describe','Evaluate the extent to which','List'], correct:2 },
   { q:'What is the Excellence cut score range on the AS 91935 marking schedule?', options:['0–2','3–4','5–6','7–8'], correct:3 },
@@ -1367,26 +1736,388 @@ var SIREN_QUESTIONS = [
   { q:'A "perspective" is best described as...', options:['One single isolated fact about an issue', 'A way of looking at the world, shaped by values and beliefs', 'A recurring seasonal weather pattern', 'Any type of supporting evidence'], correct:1 },
   { q:'Which option for Dunedin is classic "soft engineering"?', options:['Building large concrete sea walls', 'Dune planting and notching', 'Managed retreat of the whole coastline', 'Raising household insurance premiums'], correct:1 },
   { q:'A "viewpoint" is best described as...', options:['A specific opinion held on this particular issue', 'A type of graph used to show trends', 'A named geographic location on a map', 'A cut score on the marking schedule'], correct:0 },
-  { q:'Task C asks you to identify which of these, and justify your choice?', options:['Whichever option turns out to be cheapest', 'The viewpoint that mattered most in your decision', 'The oldest resource in the booklet', 'Whichever answer is the shortest to write'], correct:1 }
+  { q:'Task C asks you to identify which of these, and justify your choice?', options:['Whichever option turns out to be cheapest', 'The viewpoint that mattered most in your decision', 'The oldest resource in the booklet', 'Whichever answer is the shortest to write'], correct:1 },
+  { q:'"Kāi Tahu wants to protect the dunes" is a viewpoint. What PERSPECTIVE produces it?', options:['An economic perspective, focused mainly on construction costs', 'A cultural / indigenous perspective, rooted in kaitiakitanga', 'A political perspective, focused mainly on council elections', 'A purely recreational perspective about beach access'], correct:1 },
+  { q:'A candidate notices ONE stakeholder\'s viewpoint is shaped by both cultural AND environmental values at once, not just one. What is this called?', options:['A viewpoint contradiction, which should be avoided in an answer', 'A compound perspective — genuinely Excellence-level, holistic thinking', 'A grading error that markers are trained to correct', 'An irrelevant detail that should be left out of an answer'], correct:1 },
+  { q:'A student describes a topic as "sand mining" without checking the resource booklet, when the real challenge described there was "conflict over access". What went wrong?', options:['Nothing — sand mining and access conflict are the same challenge', 'They assumed the challenge from the topic instead of reading the booklet', 'They used too much evidence in their answer', 'They wrote in the wrong task box on the answer sheet'], correct:1 }
 ];
 
-function findOpenTile(zoneId){
+/* =========================================================
+   THE MARKSMAN — a bright green hazard that randomly appears
+   and lines up a shot along your row or column. He telegraphs
+   one full move with a dashed sightline before firing — dodge
+   out of his row/column to stay safe. Get hit and you must
+   answer a question with a live 10-second countdown; run out
+   of time OR answer wrong and you lose points on the spot.
+   Reuses the same curriculum-aligned question bank as the Siren.
+========================================================= */
+var SNIPER_ZONES = ['issue','perspectives','decision','concepts','extensionA','extensionB','extensionC','fijiA','fijiB','fijiC'];
+var SNIPER_SPAWN_CHANCE = 0.5;
+var SNIPER_ROAM_SPAWN_CHANCE = 0.04;
+var SNIPER_REPOSITION_CHANCE = 0.25;
+var SNIPER_COOLDOWN_STEPS = 8;
+var SNIPER_TIME_LIMIT = 10;
+var SNIPER_PENALTY = 50;
+var SNIPER_REWARD_COINS = 20;
+var SNIPER_REWARD_XP = 10;
+var sniperState = { zone:null, x:null, y:null, aiming:false, question:null };
+var sniperCooldown = 0;
+var sniperTimerId = null;
+var sniperTimeLeft = 0;
+function spawnSniperAt(zoneId, tile){
+  sniperState = { zone:zoneId, x:tile.x, y:tile.y, aiming:false, question:null };
+  showToast('⚡ A flash of bright green — the Marksman is here. Stay off his row and column!', true);
+}
+function maybeSpawnSniper(zoneId){
+  sniperState = { zone:null, x:null, y:null, aiming:false, question:null };
+  if(state.preview) return;
+  if(SNIPER_ZONES.indexOf(zoneId) === -1) return;
+  if(sniperCooldown > 0) return;
+  if(Math.random() >= SNIPER_SPAWN_CHANCE) return;
+  var tile = findOpenTile(zoneId, { x:1, y:ZONES[zoneId].entryY, minDist:3 });
+  if(!tile) return;
+  spawnSniperAt(zoneId, tile);
+}
+function maybeRoamSpawnSniper(){
+  if(state.preview) return;
+  if(sniperState.zone) return; /* already active somewhere */
+  if(sniperCooldown > 0) return;
+  if(SNIPER_ZONES.indexOf(state.zone) === -1) return;
+  if(Math.random() >= SNIPER_ROAM_SPAWN_CHANCE) return;
+  var tile = findOpenTile(state.zone, { x:state.x, y:state.y, minDist:3 });
+  if(!tile) return;
+  spawnSniperAt(state.zone, tile);
+}
+function sniperHasLineOfSight(){
+  if(sniperState.x === state.x && sniperState.y === state.y) return false;
+  if(sniperState.x !== state.x && sniperState.y !== state.y) return false;
+  return true;
+}
+function advanceSniper(){
+  if(!sniperState.zone || sniperState.zone !== state.zone) return;
+  if(sniperHasLineOfSight()){
+    if(sniperState.aiming){
+      openSniperEncounter();
+      return;
+    }
+    sniperState.aiming = true;
+    showToast('🎯 The Marksman has you lined up — move off his row/column!', true);
+  } else {
+    sniperState.aiming = false;
+    if(Math.random() < SNIPER_REPOSITION_CHANCE){
+      var tile = findOpenTile(state.zone, { x:state.x, y:state.y, minDist:2 });
+      if(tile){ sniperState.x = tile.x; sniperState.y = tile.y; }
+    }
+  }
+}
+function openSniperEncounter(){
+  currentNpcId = null;
+  dialogOpen = true;
+  stopSpeaking();
+  sniperState.question = SIREN_QUESTIONS[Math.floor(Math.random()*SIREN_QUESTIONS.length)];
+  document.getElementById('dlg-name').textContent = 'THE MARKSMAN';
+  document.getElementById('dlg-role').textContent = 'Hit! Answer before the timer runs out.';
+  var badge = document.getElementById('dlg-badge');
+  badge.style.background = '#2f8a4c';
+  badge.textContent = '🎯';
+  document.getElementById('overlay-dlg').hidden = false;
+  renderSniperEncounter();
+  startSniperTimer();
+}
+function renderSniperEncounter(){
+  var body = document.getElementById('dlg-body'), foot = document.getElementById('dlg-foot');
+  body.innerHTML=''; foot.innerHTML='';
+  var warn = document.createElement('p');
+  warn.innerHTML = '<b>Tagged by the Marksman — bright green light in your eyes.</b> Answer in ' + SNIPER_TIME_LIMIT + ' seconds: get it right for a bonus, get it wrong or run out of time and you lose <b>' + SNIPER_PENALTY + ' points</b> immediately, even into the negatives. Your case file progress is never touched either way.';
+  body.appendChild(warn);
+  var timerRow = document.createElement('div'); timerRow.className = 'sniper-timer-row';
+  var timerLabel = document.createElement('span'); timerLabel.textContent = 'Time left:';
+  var timerEl = document.createElement('span'); timerEl.className = 'sniper-timer'; timerEl.id = 'sniper-timer';
+  timerRow.appendChild(timerLabel); timerRow.appendChild(timerEl);
+  body.appendChild(timerRow);
+  var qP = document.createElement('p'); qP.style.cssText='font-weight:700;margin-top:10px;'; qP.textContent = sniperState.question.q;
+  body.appendChild(qP);
+  var optList = document.createElement('div'); optList.className='opt-list';
+  sniperState.question.options.forEach(function(optText, idx){
+    var b = document.createElement('button'); b.className='opt-btn'; b.textContent = optText;
+    b.onclick = function(){ onSniperAnswer(idx, optList); };
+    optList.appendChild(b);
+  });
+  body.appendChild(optList);
+}
+function startSniperTimer(){
+  clearSniperTimer();
+  sniperTimeLeft = SNIPER_TIME_LIMIT;
+  updateSniperTimerUI();
+  sniperTimerId = setInterval(function(){
+    sniperTimeLeft--;
+    updateSniperTimerUI();
+    if(sniperTimeLeft <= 0){
+      clearSniperTimer();
+      onSniperTimeout();
+    }
+  }, 1000);
+}
+function clearSniperTimer(){
+  if(sniperTimerId){ clearInterval(sniperTimerId); sniperTimerId = null; }
+}
+function updateSniperTimerUI(){
+  var el = document.getElementById('sniper-timer');
+  if(!el) return;
+  el.textContent = sniperTimeLeft + 's';
+  el.classList.toggle('urgent', sniperTimeLeft <= 3);
+}
+function onSniperAnswer(idx, optList){
+  clearSniperTimer();
+  Array.prototype.forEach.call(optList.children, function(c){ c.disabled = true; });
+  if(idx === sniperState.question.correct){
+    optList.children[idx].classList.add('correct');
+    addCoins(SNIPER_REWARD_COINS); addXp(SNIPER_REWARD_XP);
+    setTimeout(function(){ renderSniperResult(true,false); }, 700);
+  } else {
+    optList.children[idx].classList.add('wrong');
+    optList.children[sniperState.question.correct].classList.add('correct');
+    addCoins(-SNIPER_PENALTY, true);
+    setTimeout(function(){ renderSniperResult(false,false); }, 1200);
+  }
+}
+function onSniperTimeout(){
+  var body = document.getElementById('dlg-body');
+  var optList = body.querySelector('.opt-list');
+  if(optList){ Array.prototype.forEach.call(optList.children, function(c){ c.disabled = true; }); optList.children[sniperState.question.correct].classList.add('correct'); }
+  addCoins(-SNIPER_PENALTY, true);
+  renderSniperResult(false, true);
+}
+function renderSniperResult(won, timedOut){
+  var body = document.getElementById('dlg-body'), foot = document.getElementById('dlg-foot');
+  body.innerHTML=''; foot.innerHTML='';
+  var banner = document.createElement('div');
+  banner.className = 'grade-banner' + (won ? '' : ' fail');
+  if(won){
+    banner.innerHTML = '<div class="grade">CLEAN SHOT ANSWERED</div><div class="sub">Hit, but you answered it clean. +' + SNIPER_REWARD_COINS + ' points, +' + SNIPER_REWARD_XP + ' XP.</div>';
+  } else if(timedOut){
+    banner.innerHTML = '<div class="grade">TOO SLOW</div><div class="sub">Time ran out — ' + SNIPER_PENALTY + ' points gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
+  } else {
+    banner.innerHTML = '<div class="grade">HIT</div><div class="sub">Wrong call under pressure — ' + SNIPER_PENALTY + ' points gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
+  }
+  body.appendChild(banner);
+  var doneBtn = document.createElement('button'); doneBtn.className='btn'; doneBtn.textContent='Continue'; doneBtn.onclick=closeSniperDialog;
+  foot.appendChild(doneBtn);
+}
+function closeSniperDialog(){
+  clearSniperTimer();
+  sniperState = { zone:null, x:null, y:null, aiming:false, question:null };
+  sniperCooldown = SNIPER_COOLDOWN_STEPS;
+  closeDialog();
+}
+
+/* =========================================================
+   WISDOM CORNER — a glowing lightbulb icon in every zone.
+   Purely optional flavour: costs a few points, hands back a
+   random inspirational quote. Never blocks or gates anything.
+========================================================= */
+var QUOTE_COST = 5;
+var QUOTES = [
+  { text:'You may delay, but time will not.', by:'Benjamin Franklin' },
+  { text:'Procrastination is the thief of time.', by:'Edward Young' },
+  { text:'It is hard to soar like an eagle when you are surrounded by turkeys.', by:'D J Kennedy' },
+  { text:'It always seems impossible until it’s done.', by:'Nelson Mandela' },
+  { text:'Don’t watch the clock; do what it does. Keep going.', by:'Sam Levenson' },
+  { text:'Whether you think you can, or you think you can’t — you’re right.', by:'Henry Ford' },
+  { text:'A year from now you may wish you had started today.', by:'Karen Lamb' },
+  { text:'You don’t have to be great to start, but you have to start to be great.', by:'Zig Ziglar' },
+  { text:'Success is the sum of small efforts, repeated day in and day out.', by:'Robert Collier' },
+  { text:'Do the hard jobs first. The easy jobs will take care of themselves.', by:'Dale Carnegie' },
+  { text:'The best time to plant a tree was 20 years ago. The second best time is now.', by:'Chinese proverb' },
+  { text:'Well done is better than well said.', by:'Benjamin Franklin' },
+  { text:'The expert in anything was once a beginner.', by:'Anonymous' },
+  { text:'Motivation is what gets you started. Habit is what keeps you going.', by:'Jim Ryun' }
+];
+function openQuoteIcon(){
+  currentNpcId = null;
+  dialogOpen = true;
+  stopSpeaking();
+  addCoins(-QUOTE_COST);
+  var q = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  document.getElementById('dlg-name').textContent = 'WISDOM CORNER';
+  document.getElementById('dlg-role').textContent = '−' + QUOTE_COST + ' points, for a moment of inspiration';
+  var badge = document.getElementById('dlg-badge');
+  badge.style.background = 'var(--gold)';
+  badge.textContent = '💡';
+  var body = document.getElementById('dlg-body'), foot = document.getElementById('dlg-foot');
+  body.innerHTML = '<div class="quote-box"><p class="quote-text">“' + q.text + '”</p><p class="quote-by">— ' + q.by + '</p></div>';
+  foot.innerHTML = '';
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'btn'; closeBtn.textContent = 'Back to it';
+  closeBtn.addEventListener('click', closeDialog);
+  foot.appendChild(closeBtn);
+  document.getElementById('overlay-dlg').hidden = false;
+}
+
+/* =========================================================
+   TEACH ME — an optional, differently-styled tab in the journal.
+   Plain-English walkthroughs of Task A/B/C and the viewpoint vs
+   perspective distinction, available any time, never mandatory.
+========================================================= */
+var ZONE_TASK_FOCUS = { issue:'A', perspectives:'B', decision:'C', extensionA:'A', extensionB:'B', extensionC:'C', fijiA:'A', fijiB:'B', fijiC:'C' };
+var TEACH_ME_CONTENT = [
+  { key:'A', tag:'TASK A', title:'Explain the Issue',
+    body:[ 'Your job: name the geographic challenge, and explain why it matters to the people affected by it.',
+           '<b>Step 1 — Describe.</b> Say what the challenge is, in relation to its environment (natural and/or cultural). Define any process word you use (e.g. "erosion is...").',
+           '<b>Step 2 — Explain why.</b> Say who is affected and how. This is the part students skip most — a description with no "why it matters" is only half the answer.',
+           '<b>Step 3 — Evidence.</b> Attach one specific, checkable fact: a number, a date, a distance, a named place.',
+           'Biggest trap: don\'t assume what the challenge is from the topic\'s general theme. Always read the resource booklet first — the exact challenge is always written there for you.' ] },
+  { key:'B', tag:'TASK B', title:'Explain the Perspectives',
+    body:[ 'Your job: explain who is involved in the decision, and how their perspective shapes their viewpoint.',
+           'Work through this chain for every stakeholder: their <b>viewpoint</b> (opinion on THIS issue) comes from their <b>perspective</b> (economic / social / environmental / cultural lens), which comes from their underlying <b>beliefs and values</b>.',
+           'Top answers also say HOW MUCH each perspective actually shaped the outcome — "to a great/moderate/limited extent..." — not just that it existed.',
+           'Advanced move: sometimes ONE stakeholder\'s viewpoint is really built from two perspectives at once (e.g. cultural AND environmental). Naming that layering is genuinely Excellence-level thinking.' ] },
+  { key:'VP', tag:'DEFINITIONS', title:'Viewpoint vs Perspective — don\'t mix these up',
+    body:[ 'This exact mix-up costs marks almost every single year, on every topic. Get it straight now:',
+           '<b>Perspective</b> = the LENS a person sees the world through (economic, social, environmental, cultural), shaped by their values and beliefs.',
+           '<b>Viewpoint</b> = the specific OPINION that lens produces on THIS particular issue.',
+           'Example: a coastal scientist\'s <i>perspective</i> is environmental — they value long-term, evidence-based sustainability. That perspective produces their <i>viewpoint</i>: "don\'t build a sea wall, restore the dunes instead."',
+           'Quick test: if you can swap it in for "opinion", it\'s a viewpoint. If you can swap it in for "lens" or "angle", it\'s a perspective.' ] },
+  { key:'C', tag:'TASK C', title:'Justify a Decision',
+    body:[ 'Your job: choose one option, and argue convincingly that it\'s the best choice.',
+           'The shape that works every time: state your choice clearly &rarr; explain briefly why NOT the other options &rarr; build your main argument, weaving in perspectives + evidence + terminology &rarr; bring in a relevant Māori or Pacific concept &rarr; name the viewpoint that mattered most (some years, LEAST — read the actual question) and justify why &rarr; finish with a judgement, not a summary.',
+           'Biggest trap: ending with a recap of what you already said instead of an actual judgement call. A summary restates; a judgement decides.' ] },
+  { key:'CPT', tag:'BONUS', title:'Bringing in a Concept',
+    body:[ 'Excellence answers name a relevant concept from te ao Māori or the Pacific, and connect it directly to the decision — not just define it in isolation.',
+           'Weak: "Kaitiakitanga means guardianship of resources for future generations." (a dictionary definition, disconnected from the actual decision)',
+           'Strong: "Choosing Option B reflects kaitiakitanga, because restoring the dunes protects the taonga they hold for future generations — the same obligation that gives this stakeholder\'s viewpoint so much weight here." (tied to THIS decision, THIS evidence, THIS stakeholder)',
+           'Visit the Concepts Vault for a full list of Māori and Pacific concepts with real-world examples to draw on.' ] },
+  { key:'MARK', tag:"MARKER'S EYE", title:'Reading Like an Examiner',
+    body:[ 'Your job here flips around: instead of writing an answer, you\'re marking one — spotting the moving parts inside someone else\'s paragraph.',
+           'Every strong exemplar paragraph is built from three ingredients, tangled together on purpose: a <b>NAME</b> (a specific stakeholder, place, or source), a <b>PERSPECTIVE</b> or viewpoint (the lens or opinion driving the argument), and <b>EVIDENCE</b> (a number, date, distance, or other checkable fact).',
+           'Tag each one as you find it. Real exam questions sometimes ask for the MOST influential viewpoint, and sometimes — as a twist — the LEAST. Read the actual question carefully before you decide which you\'re hunting for.',
+           'This is the same skill in reverse: if you can spot these three ingredients in someone else\'s writing, you\'ll remember to put them in your own.' ] }
+];
+/* ZONE_TEACH_KEYS: which TEACH_ME_CONTENT card(s) each room's green Teach Me
+   icon popup should show. Distinct from ZONE_TASK_FOCUS, which is only used
+   to highlight a card in the journal's Teach Me tab. */
+var ZONE_TEACH_KEYS = {
+  hq: ['A','B','C'],
+  issue: ['A'],
+  perspectives: ['B','VP'],
+  decision: ['C'],
+  concepts: ['CPT'],
+  exam: ['A','B','C'],
+  extensionA: ['A'],
+  extensionB: ['B','VP'],
+  extensionC: ['C'],
+  extensionFinale: ['MARK'],
+  fijiA: ['A'],
+  fijiB: ['B','VP'],
+  fijiC: ['C'],
+  fijiFinale: ['MARK']
+};
+function openTeachIcon(){
+  currentNpcId = null;
+  dialogOpen = true;
+  stopSpeaking();
+  var zoneId = state.zone;
+  var keys = ZONE_TEACH_KEYS[zoneId] || [];
+  var cards = TEACH_ME_CONTENT.filter(function(c){ return keys.indexOf(c.key) !== -1; });
+  document.getElementById('dlg-name').textContent = '📘 TEACH ME — ' + currentZone().name.split(' — ')[0];
+  document.getElementById('dlg-role').textContent = 'Read this first — it unlocks the rest of this room.';
+  var badge = document.getElementById('dlg-badge');
+  badge.style.background = '#4f9e6a';
+  badge.textContent = '📘';
+  document.querySelector('#overlay-dlg .modal').classList.add('teach-modal');
+  var body = document.getElementById('dlg-body'), foot = document.getElementById('dlg-foot');
+  body.innerHTML = '';
+  var wrap = document.createElement('div'); wrap.className = 'teach-popup';
+  cards.forEach(function(c){
+    var card = document.createElement('div'); card.className = 'teach-card';
+    var tag = document.createElement('span'); tag.className = 'teach-tag'; tag.textContent = c.tag;
+    var h4 = document.createElement('h4'); h4.textContent = c.title;
+    card.appendChild(tag);
+    card.appendChild(h4);
+    c.body.forEach(function(p){ var pEl = document.createElement('p'); pEl.innerHTML = p; card.appendChild(pEl); });
+    wrap.appendChild(card);
+  });
+  body.appendChild(wrap);
+  foot.innerHTML = '';
+  var btn = document.createElement('button'); btn.className = 'btn';
+  btn.textContent = "Got it — unlock this room";
+  btn.onclick = function(){
+    state.done['teach_'+zoneId] = true;
+    saveGame();
+    closeDialog();
+  };
+  foot.appendChild(btn);
+  document.getElementById('overlay-dlg').hidden = false;
+}
+function npcAt(zoneId, x, y){
+  var hit = null;
+  ZONES[zoneId].npcs.forEach(function(id){ var n = NPCS[id]; if(n.x===x && n.y===y) hit = id; });
+  return hit;
+}
+function findOpenTile(zoneId, avoid){
   var tries = 30;
   while(tries-- > 0){
     var x = 1+Math.floor(Math.random()*(COLS-2));
     var y = 1+Math.floor(Math.random()*(ROWS-2));
-    if(!objAt(zoneId,x,y)) return {x:x,y:y};
+    if(npcAt(zoneId,x,y)) continue;
+    if(avoid && (Math.abs(x-avoid.x)+Math.abs(y-avoid.y)) < avoid.minDist) continue;
+    return {x:x,y:y};
   }
   return null;
+}
+function spawnSirenAt(zoneId, tile){
+  sirenState = { zone:zoneId, x:tile.x, y:tile.y, question:null };
+  showToast('⚠ The Siren is hunting — dodge it or get caught!', true);
 }
 function maybeSpawnSiren(zoneId){
   sirenState = { zone:null, x:null, y:null, question:null };
   if(state.preview) return;
   if(SIREN_ZONES.indexOf(zoneId) === -1) return;
+  if(sirenCooldown > 0) return;
   if(Math.random() >= SIREN_SPAWN_CHANCE) return;
-  var tile = findOpenTile(zoneId);
+  var tile = findOpenTile(zoneId, { x:1, y:ZONES[zoneId].entryY, minDist:3 });
   if(!tile) return;
-  sirenState = { zone:zoneId, x:tile.x, y:tile.y, question:null };
+  spawnSirenAt(zoneId, tile);
+}
+function maybeRoamSpawnSiren(){
+  if(state.preview) return;
+  if(sirenState.zone) return; /* already active somewhere */
+  if(sirenCooldown > 0) return;
+  if(SIREN_ZONES.indexOf(state.zone) === -1) return;
+  if(Math.random() >= SIREN_ROAM_SPAWN_CHANCE) return;
+  var tile = findOpenTile(state.zone, { x:state.x, y:state.y, minDist:3 });
+  if(!tile) return;
+  spawnSirenAt(state.zone, tile);
+}
+function sirenCatchCheck(){
+  if(!sirenState.zone || sirenState.zone !== state.zone) return false;
+  var dist = Math.max(Math.abs(state.x-sirenState.x), Math.abs(state.y-sirenState.y));
+  if(dist <= SIREN_CATCH_DIST){ openSirenEncounter(); return true; }
+  return false;
+}
+function advanceSiren(){
+  if(!sirenState.zone || sirenState.zone !== state.zone) return;
+  if(sirenCatchCheck()) return;
+  var sx = sirenState.x, sy = sirenState.y;
+  var dx = state.x - sx, dy = state.y - sy;
+  var stepX = dx > 0 ? 1 : (dx < 0 ? -1 : 0);
+  var stepY = dy > 0 ? 1 : (dy < 0 ? -1 : 0);
+  var moves = [];
+  if(Math.abs(dx) >= Math.abs(dy)){
+    if(stepX) moves.push([stepX,0]);
+    if(stepY) moves.push([0,stepY]);
+  } else {
+    if(stepY) moves.push([0,stepY]);
+    if(stepX) moves.push([stepX,0]);
+  }
+  for(var i=0;i<moves.length;i++){
+    var nx = sx+moves[i][0], ny = sy+moves[i][1];
+    if(tileIsWall(state.zone, nx, ny)) continue;
+    if(npcAt(state.zone, nx, ny)) continue;
+    sirenState.x = nx; sirenState.y = ny;
+    break;
+  }
+  sirenCatchCheck();
 }
 function openSirenEncounter(){
   currentNpcId = null;
@@ -1394,7 +2125,7 @@ function openSirenEncounter(){
   stopSpeaking();
   sirenState.question = SIREN_QUESTIONS[Math.floor(Math.random()*SIREN_QUESTIONS.length)];
   document.getElementById('dlg-name').textContent = 'THE SIREN';
-  document.getElementById('dlg-role').textContent = 'A flash bonus question — optional, no obligation.';
+  document.getElementById('dlg-role').textContent = 'Caught! Answer now — there\'s no walking away from this one.';
   var badge = document.getElementById('dlg-badge');
   badge.style.background = '#8a1f1f';
   badge.textContent = '!';
@@ -1405,7 +2136,7 @@ function renderSirenEncounter(){
   var body = document.getElementById('dlg-body'), foot = document.getElementById('dlg-foot');
   body.innerHTML=''; foot.innerHTML='';
   var warn = document.createElement('p');
-  warn.innerHTML = '<b>A siren cuts through the air, red light strobing.</b> Answer this one question right now for a bonus — get it wrong and you lose <b>' + SIREN_PENALTY + ' points</b> immediately, even into the negatives. This is entirely optional and never blocks your progress.';
+  warn.innerHTML = '<b>The Siren has caught you — red light strobing right in your face.</b> Answer this question right now: get it right for a bonus, get it wrong and you lose <b>' + SIREN_PENALTY + ' points</b> immediately, even into the negatives. Your case file progress is never touched either way.';
   body.appendChild(warn);
   var qP = document.createElement('p'); qP.style.cssText='font-weight:700;margin-top:10px;'; qP.textContent = sirenState.question.q;
   body.appendChild(qP);
@@ -1416,11 +2147,10 @@ function renderSirenEncounter(){
     optList.appendChild(b);
   });
   body.appendChild(optList);
-  var walkBtn = document.createElement('button'); walkBtn.className='btn ghost small'; walkBtn.textContent='Walk Away'; walkBtn.onclick=closeSirenDialog;
-  foot.appendChild(walkBtn);
 }
 function closeSirenDialog(){
   sirenState = { zone:null, x:null, y:null, question:null };
+  sirenCooldown = SIREN_COOLDOWN_STEPS;
   closeDialog();
 }
 function onSirenAnswer(idx, optList){
@@ -1442,7 +2172,7 @@ function renderSirenResult(won){
   var banner = document.createElement('div');
   banner.className = 'grade-banner' + (won ? '' : ' fail');
   if(won){
-    banner.innerHTML = '<div class="grade">SHARP EYES</div><div class="sub">You answered before the siren faded. +' + SIREN_REWARD_COINS + ' points, +' + SIREN_REWARD_XP + ' XP.</div>';
+    banner.innerHTML = '<div class="grade">SHARP EYES</div><div class="sub">Caught, but you answered it clean. +' + SIREN_REWARD_COINS + ' points, +' + SIREN_REWARD_XP + ' XP.</div>';
   } else {
     banner.innerHTML = '<div class="grade">CAUGHT OUT</div><div class="sub">Wrong call under pressure — ' + SIREN_PENALTY + ' points gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
   }
@@ -1548,9 +2278,11 @@ function openNpc(id){
   document.getElementById('overlay-dlg').hidden = false;
 }
 function closeDialog(){
+  clearSniperTimer();
   dialogOpen = false;
   currentNpcId = null;
   stopSpeaking();
+  document.querySelector('#overlay-dlg .modal').classList.remove('teach-modal');
   document.getElementById('overlay-dlg').hidden = true;
   render();
   if(pendingMandatorySummary){
@@ -1565,9 +2297,17 @@ function initialsFor(name){
   return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
 }
 
+/* unlockAfter can be a single npc/teach id, or an array of them (all must be
+   done) — arrays let a task require BOTH the previous task in its own
+   sequence AND that room's Teach Me icon. */
+function unlockAfterList(npc){
+  if(!npc.unlockAfter) return [];
+  return Array.isArray(npc.unlockAfter) ? npc.unlockAfter : [npc.unlockAfter];
+}
 function isNpcLocked(id){
   var npc = NPCS[id];
-  return !state.done[id] && !!npc.unlockAfter && !state.done[npc.unlockAfter];
+  if(state.done[id]) return false;
+  return unlockAfterList(npc).some(function(r){ return !state.done[r]; });
 }
 
 function renderNpcDialogue(id){
@@ -1582,7 +2322,8 @@ function renderNpcDialogue(id){
   foot.innerHTML = '';
 
   if(isNpcLocked(id)){
-    var prevNpc = NPCS[npc.unlockAfter];
+    var unmet = unlockAfterList(npc).filter(function(r){ return !state.done[r]; });
+    var prevNpc = NPCS[unmet[0]];
     body.innerHTML = '<div class="feedback bad">&#128274; Not yet, cadet — finish <b>'+prevNpc.name+'</b>\'s task first, then come back here.</div>';
     var lockClose = document.createElement('button');
     lockClose.className = 'btn'; lockClose.textContent = 'Close';
@@ -2372,6 +3113,24 @@ function updateJournal(){
   var body = document.getElementById('journal-body');
   document.getElementById('journal-count').textContent = doneCount() + '/' + ALL_NPC_IDS.length;
   body.innerHTML = '';
+  body.className = 'journal-body' + (journalTab === 'teach' ? ' teach-mode' : '');
+  if(journalTab === 'teach'){
+    var focus = ZONE_TASK_FOCUS[state.zone];
+    var note = document.createElement('div'); note.className = 'teach-note';
+    note.textContent = focus
+      ? ('You\'re currently in a Task ' + focus + ' zone — that section is outlined in gold below. Everything here is optional background reading, whenever you want it.')
+      : 'Browse any section below, any time — this tab is entirely optional and never blocks your progress.';
+    body.appendChild(note);
+    TEACH_ME_CONTENT.forEach(function(sec){
+      var el = document.createElement('div');
+      el.className = 'teach-card' + (sec.key === focus ? ' current' : '');
+      var html = '<span class="teach-tag">' + sec.tag + '</span><h4>' + sec.title + '</h4>';
+      sec.body.forEach(function(p){ html += '<p>' + p + '</p>'; });
+      el.innerHTML = html;
+      body.appendChild(el);
+    });
+    return;
+  }
   if(journalTab === 'data'){
     PINNED_CARDS.forEach(function(c){
       var el = document.createElement('div');
@@ -2418,7 +3177,12 @@ function updateMapTrack(){
   ZONE_ORDER.forEach(function(z){
     var dot = document.createElement('span');
     dot.className = 'map-dot' + (state.zone===z ? ' here' : (zoneFullyDone(z) ? ' done' : ''));
-    dot.textContent = ZONES[z].name.split(' — ')[0];
+    var parts = ZONES[z].name.split(' — ');
+    /* Several rooms share the same site name (e.g. "EXTENSION FIELD SITE — Task A/B/C").
+       Keep the room-specific suffix so the map track can actually tell them apart. */
+    dot.textContent = (parts.length > 1 && /FIELD SITE$/.test(parts[0]))
+      ? parts[0].replace(' FIELD SITE','') + ' · ' + parts[1]
+      : parts[0];
     track.appendChild(dot);
   });
 }
@@ -2426,17 +3190,26 @@ function updateMapTrack(){
 /* =========================================================
    CASE FILE SUMMARY
 ========================================================= */
+function idsForZones(zoneIds){
+  var out = [];
+  zoneIds.forEach(function(z){ ZONES[z].npcs.forEach(function(id){ out.push(id); }); });
+  return out;
+}
 function computeSummaryData(){
   var rank = coinRank(state.coins);
-  var extIds = ZONES.extension.npcs;
+  var extIds = idsForZones(['extensionA','extensionB','extensionC','extensionFinale']);
   var extDone = extIds.filter(function(id){ return state.done[id]; }).length;
+  var fijiIds = idsForZones(['fijiA','fijiB','fijiC','fijiFinale']);
+  var fijiDone = fijiIds.filter(function(id){ return state.done[id]; }).length;
   return {
     level: xpToLevel(state.xp), xp: state.xp, coins: state.coins, rank: rank,
     logged: doneCount(), loggedTotal: ALL_NPC_IDS.length,
     zonesDone: badgeCount(), zonesTotal: ZONE_ORDER.length,
     examAttempted: !!state.examScore, examScore: state.examScore, writtenAnswer: state.writtenAnswer,
     extAttempted: extDone > 0, extDone: extDone, extTotal: extIds.length,
-    extWritten: (state.textAnswers && state.textAnswers['fx_written']) || ''
+    extWritten: (state.textAnswers && state.textAnswers['fx_written']) || '',
+    fijiAttempted: fijiDone > 0, fijiDone: fijiDone, fijiTotal: fijiIds.length,
+    fijiWritten: (state.textAnswers && state.textAnswers['pf_written']) || ''
   };
 }
 function summaryCard(tag, buildFn){
@@ -2491,6 +3264,21 @@ function renderSummary(){
       if(d.extWritten){
         var lbl = document.createElement('p'); lbl.style.marginTop = '8px'; lbl.innerHTML = '<b>Written Task B answer (Waimārama):</b>';
         var wp = document.createElement('p'); wp.style.whiteSpace = 'pre-wrap'; wp.textContent = d.extWritten;
+        el.appendChild(lbl); el.appendChild(wp);
+      }
+    } else {
+      var np = document.createElement('p'); np.textContent = 'Not started.';
+      el.appendChild(np);
+    }
+  }));
+
+  body.appendChild(summaryCard('PACIFIC FIELD SITE (bonus)', function(el){
+    if(d.fijiAttempted){
+      var p = document.createElement('p'); p.textContent = d.fijiDone + ' / ' + d.fijiTotal + ' field tasks completed.';
+      el.appendChild(p);
+      if(d.fijiWritten){
+        var lbl = document.createElement('p'); lbl.style.marginTop = '8px'; lbl.innerHTML = '<b>Written Task B answer (Fiji):</b>';
+        var wp = document.createElement('p'); wp.style.whiteSpace = 'pre-wrap'; wp.textContent = d.fijiWritten;
         el.appendChild(lbl); el.appendChild(wp);
       }
     } else {
@@ -2556,6 +3344,14 @@ function buildSummaryText(){
     lines.push('Not started.');
   }
   lines.push('');
+  lines.push('PACIFIC FIELD SITE (bonus)');
+  if(d.fijiAttempted){
+    lines.push('Progress: ' + d.fijiDone + ' / ' + d.fijiTotal + ' field tasks completed.');
+    if(d.fijiWritten){ lines.push('Written Task B answer (Fiji):'); lines.push(d.fijiWritten); }
+  } else {
+    lines.push('Not started.');
+  }
+  lines.push('');
   lines.push('SOURCES & REFERENCES');
   REFERENCES.forEach(function(ref){
     lines.push('- ' + plainText(ref.title) + ': ' + plainText(ref.note));
@@ -2614,15 +3410,21 @@ document.getElementById('btn-summary-copy').addEventListener('click', function()
 });
 document.getElementById('btn-summary-email').addEventListener('click', function(){
   var text = buildSummaryText();
-  copySummaryText(text, true); /* also copy silently, so nothing is lost if the email body gets cut off */
+  copySummaryText(text, true); /* also copy silently, so nothing is lost if the compose window can't take it all */
   var name = (document.getElementById('summary-name').value || '').trim();
   var subject = 'Decision Academy Case File Summary' + (name ? ' — ' + name : '');
   var MAX_BODY = 1500;
   var bodyText = text.length > MAX_BODY
-    ? text.slice(0, MAX_BODY) + '\n\n[Truncated for email — your full summary has been copied to your clipboard. Paste it here (Ctrl/Cmd+V) to include everything.]'
+    ? text.slice(0, MAX_BODY) + '\n\n[Truncated — your full summary has been copied to your clipboard. Paste it here (Ctrl/Cmd+V) to include everything.]'
     : text;
-  window.location.href = 'mailto:' + TEACHER_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(bodyText);
-  showToast('Opening your email app — your summary is copied too, just in case.');
+  var gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(TEACHER_EMAIL) +
+    '&su=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(bodyText);
+  var opened = window.open(gmailUrl, '_blank');
+  if(!opened){
+    showToast('Your summary is copied — paste it into a new Gmail message to ' + TEACHER_EMAIL + '.', true);
+  } else {
+    showToast('Opening Gmail in a new tab — your summary is copied too, just in case.');
+  }
   markSummarySubmitted();
 });
 document.getElementById('btn-speak-summary').addEventListener('click', function(){
@@ -2689,6 +3491,10 @@ function resetGame(){
   state.textAnswers={};
   state.summarySubmitted=false;
   sirenState = { zone:null, x:null, y:null, question:null };
+  sirenCooldown = 0;
+  clearSniperTimer();
+  sniperState = { zone:null, x:null, y:null, aiming:false, question:null };
+  sniperCooldown = 0;
   document.getElementById('preview-banner').hidden = true;
   updateHud(); updateZoneBanner(); updateJournal(); updateMapTrack(); render();
   saveGame();
