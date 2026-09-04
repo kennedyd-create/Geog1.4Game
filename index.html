@@ -724,17 +724,52 @@ var THEME_COLORS = {
   lagoon:{ floor:'#345959', floor2:'#376161', wall:'#1b3333' }
 };
 /* Purely cosmetic floor decoration, per zone theme — never blocks movement,
-   never interactive, just flavour that nods at the room's topic. */
+   never interactive, just flavour that nods at the room's topic. Each entry
+   is a pool of emoji for that theme; ensureZoneDecor() below picks a random
+   couple of them onto random free tiles for every individual room, so rooms
+   that share a theme (the four Extension rooms, the four Pacific rooms)
+   don't all look copy-pasted. */
 var THEME_DECOR = {
-  academy: [ {x:6,y:2,e:'📚'}, {x:10,y:3,e:'🗂️'} ],
-  coast: [ {x:6,y:2,e:'🌊'}, {x:2,y:5,e:'🐚'} ],
-  plaza: [ {x:2,y:4,e:'🏛️'}, {x:10,y:4,e:'🌳'} ],
-  chamber: [ {x:2,y:3,e:'⚖️'}, {x:10,y:3,e:'📜'} ],
-  vault: [ {x:9,y:5,e:'🗝️'}, {x:2,y:2,e:'💎'} ],
-  exam: [ {x:3,y:2,e:'📝'}, {x:9,y:5,e:'⏰'} ],
-  field: [ {x:2,y:2,e:'🚙'}, {x:10,y:5,e:'🌿'} ],
-  lagoon: [ {x:2,y:2,e:'🌴'}, {x:10,y:5,e:'🌊'} ]
+  academy: ['📚','🗂️','🖋️','📐'],
+  coast: ['🌊','🐚','⛱️','🦀'],
+  plaza: ['🏛️','🌳','🚩','🪧'],
+  chamber: ['⚖️','📜','🕯️','🖋️'],
+  vault: ['🗝️','💎','📦','🪙'],
+  exam: ['📝','⏰','✏️','📎'],
+  field: ['🚙','🌿','🪨','🌾'],
+  lagoon: ['🌴','🐠','🐚','🌊']
 };
+/* Runtime (not fixed) placement for the Wisdom Corner quote icon and this
+   room's decorations — generated once per zone the first time it's visited
+   each session, onto tiles that don't clash with any NPC, the Teach Me icon,
+   or the entry tile, so both the icon and the decor land somewhere different
+   in every individual room instead of always the same spot. */
+var zoneDecorState = {};
+function ensureZoneDecor(zoneId){
+  if(zoneDecorState[zoneId]) return;
+  var zone = ZONES[zoneId];
+  var occupied = [ {x:1,y:zone.entryY} ];
+  zone.npcs.forEach(function(id){ var n = NPCS[id]; occupied.push({x:n.x,y:n.y}); });
+  if(zone.teachIcon) occupied.push(zone.teachIcon);
+  function pickFreeTile(){
+    for(var tries=0; tries<50; tries++){
+      var x = 1+Math.floor(Math.random()*(COLS-2));
+      var y = 1+Math.floor(Math.random()*(ROWS-2));
+      if(!occupied.some(function(o){ return o.x===x && o.y===y; })) return {x:x,y:y};
+    }
+    return null;
+  }
+  var quoteTile = pickFreeTile();
+  if(quoteTile) occupied.push(quoteTile);
+  var pool = (THEME_DECOR[zone.theme] || []).slice();
+  for(var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i]; pool[i]=pool[j]; pool[j]=t; }
+  var decor = [];
+  pool.slice(0,2).forEach(function(e){
+    var tile = pickFreeTile();
+    if(tile){ occupied.push(tile); decor.push({x:tile.x, y:tile.y, e:e}); }
+  });
+  zoneDecorState[zoneId] = { quoteIcon: quoteTile, decor: decor };
+}
 
 /* =========================================================
    NPCs  (x,y are interior tile coords, 1..COLS-2 / 1..ROWS-2)
@@ -1364,12 +1399,6 @@ function badgeCount(){
   ZONE_ORDER.forEach(function(z){ if(zoneFullyDone(z)) n++; });
   return n;
 }
-/* Used only for exit-gating: a zone with no required NPCs (a bonus zone) is
-   open to pass through immediately — required:false content never blocks progress. */
-function zoneComplete(z){
-  var required = ZONES[z].npcs.filter(function(id){ return NPCS[id].required; });
-  return required.every(function(id){ return !!state.done[id]; });
-}
 /* Used for anything the player reads as "is this zone done" — badge count, the
    Progress checklist, map dots, the Case File Summary. A zone with required
    NPCs is done once those are done (bonus NPCs in it don't count against you,
@@ -1433,14 +1462,15 @@ function objAt(z,x,y){
   if(sirenState.zone===z && sirenState.x===x && sirenState.y===y) return 'THE_SIREN';
   if(sniperState.zone===z && sniperState.x===x && sniperState.y===y) return 'THE_SNIPER';
   var zo = ZONES[z];
-  if(zo.quoteIcon && zo.quoteIcon.x===x && zo.quoteIcon.y===y) return 'QUOTE_ICON';
+  var zd = zoneDecorState[z];
+  if(zd && zd.quoteIcon && zd.quoteIcon.x===x && zd.quoteIcon.y===y) return 'QUOTE_ICON';
   if(zo.teachIcon && zo.teachIcon.x===x && zo.teachIcon.y===y) return 'TEACH_ICON';
   var npc = null;
   zo.npcs.forEach(function(id){ var n = NPCS[id]; if(n.x===x && n.y===y) npc = id; });
   return npc;
 }
 function isExitOpen(z){
-  return state.preview || zoneComplete(z);
+  return state.preview || zoneFullyDone(z);
 }
 function tileBlocked(z,x,y){
   var et = exitTile(z);
@@ -1479,8 +1509,8 @@ function render(){
       ctx.strokeRect(px,py,TILE,TILE);
     }
   }
-  var decor = THEME_DECOR[currentZone().theme];
-  if(decor){ decor.forEach(function(d){ drawDecor(d.x, d.y, d.e); }); }
+  var zoneDecor = zoneDecorState[state.zone];
+  if(zoneDecor && zoneDecor.decor){ zoneDecor.decor.forEach(function(d){ drawDecor(d.x, d.y, d.e); }); }
   currentZone().npcs.forEach(function(id){
     var n = NPCS[id];
     var cx = n.x*TILE+TILE/2, cy = n.y*TILE+TILE/2;
@@ -1506,11 +1536,11 @@ function render(){
   if(sniperState.zone === state.zone){
     drawSniperNpc(sniperState.x, sniperState.y);
   }
-  if(currentZone().quoteIcon){
-    drawQuoteIcon(currentZone().quoteIcon.x, currentZone().quoteIcon.y);
+  if(zoneDecor && zoneDecor.quoteIcon){
+    drawQuoteIcon(zoneDecor.quoteIcon.x, zoneDecor.quoteIcon.y);
   }
   if(currentZone().teachIcon){
-    drawTeachIcon(currentZone().teachIcon.x, currentZone().teachIcon.y);
+    drawTeachIcon(currentZone().teachIcon.x, currentZone().teachIcon.y, !state.done['teach_'+state.zone]);
   }
   var bobP = REDUCED_MOTION ? 0 : (isWalking ? Math.abs(Math.sin(walkAnimT*0.25))*-2 : 0);
   drawCharacter(state.x*TILE+TILE/2, state.y*TILE+TILE/2, '#3ad6c4', 'explorer', bobP, isWalking ? walkAnimT*0.35 : 0);
@@ -1588,7 +1618,7 @@ function drawQuoteIcon(x,y){
   ctx.restore();
   ctx.textBaseline = 'alphabetic';
 }
-function drawTeachIcon(x,y){
+function drawTeachIcon(x,y,showArrow){
   var cx = x*TILE+TILE/2, cy = y*TILE+TILE/2;
   var pulse = REDUCED_MOTION ? 0.5 : (0.5+0.5*Math.sin(animT*0.05));
   var glowR = 11+pulse*3;
@@ -1602,6 +1632,28 @@ function drawTeachIcon(x,y){
   ctx.textBaseline = 'middle';
   ctx.fillText('📘', cx, cy+1);
   ctx.textBaseline = 'alphabetic';
+  if(showArrow){
+    var flash = REDUCED_MOTION ? 1 : (0.4+0.6*Math.abs(Math.sin(animT*0.1)));
+    var bob = REDUCED_MOTION ? 0 : Math.abs(Math.sin(animT*0.1))*4;
+    var ay = cy-22-bob;
+    ctx.save();
+    ctx.globalAlpha = flash;
+    ctx.fillStyle = '#5be08a';
+    ctx.strokeStyle = '#123018';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(cx, ay+9);
+    ctx.lineTo(cx-6, ay-1);
+    ctx.lineTo(cx-2.5, ay-1);
+    ctx.lineTo(cx-2.5, ay-9);
+    ctx.lineTo(cx+2.5, ay-9);
+    ctx.lineTo(cx+2.5, ay-1);
+    ctx.lineTo(cx+6, ay-1);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
 }
 function drawDecor(x,y,emoji){
   var cx = x*TILE+TILE/2, cy = y*TILE+TILE/2;
@@ -1688,6 +1740,7 @@ function goNextZone(){
   state.zone = next;
   state.x = 1; state.y = ZONES[next].entryY;
   state.dir = 'right';
+  ensureZoneDecor(next);
   maybeSpawnSiren(next);
   maybeSpawnSniper(next);
   updateZoneBanner();
@@ -1719,10 +1772,10 @@ function interact(){
    way to avoid it is to dodge it on foot.
 ========================================================= */
 var SIREN_ZONES = ['issue','perspectives','decision','concepts','extensionA','extensionB','extensionC','fijiA','fijiB','fijiC'];
-var SIREN_SPAWN_CHANCE = 0.6;
-var SIREN_ROAM_SPAWN_CHANCE = 0.05;
+var SIREN_SPAWN_CHANCE = 0.8;
+var SIREN_ROAM_SPAWN_CHANCE = 0.1;
 var SIREN_CATCH_DIST = 1;
-var SIREN_COOLDOWN_STEPS = 6;
+var SIREN_COOLDOWN_STEPS = 4;
 var SIREN_PENALTY = 50;
 var SIREN_REWARD_COINS = 20;
 var SIREN_REWARD_XP = 10;
@@ -1752,10 +1805,9 @@ var SIREN_QUESTIONS = [
    Reuses the same curriculum-aligned question bank as the Siren.
 ========================================================= */
 var SNIPER_ZONES = ['issue','perspectives','decision','concepts','extensionA','extensionB','extensionC','fijiA','fijiB','fijiC'];
-var SNIPER_SPAWN_CHANCE = 0.5;
-var SNIPER_ROAM_SPAWN_CHANCE = 0.04;
-var SNIPER_REPOSITION_CHANCE = 0.25;
-var SNIPER_COOLDOWN_STEPS = 8;
+var SNIPER_SPAWN_CHANCE = 0.8;
+var SNIPER_ROAM_SPAWN_CHANCE = 0.1;
+var SNIPER_COOLDOWN_STEPS = 4;
 var SNIPER_TIME_LIMIT = 10;
 var SNIPER_PENALTY = 50;
 var SNIPER_REWARD_COINS = 20;
@@ -1795,6 +1847,32 @@ function sniperHasLineOfSight(){
 }
 function advanceSniper(){
   if(!sniperState.zone || sniperState.zone !== state.zone) return;
+  /* While not already lined up, the Marksman actively chases — one tile
+     closer to you every move, same step logic as the Siren. Once he's
+     lined up (aiming), he holds still for exactly one telegraphed turn
+     so you always get a real chance to dodge before he fires. */
+  if(!sniperState.aiming){
+    var sx = sniperState.x, sy = sniperState.y;
+    var dx = state.x - sx, dy = state.y - sy;
+    var stepX = dx > 0 ? 1 : (dx < 0 ? -1 : 0);
+    var stepY = dy > 0 ? 1 : (dy < 0 ? -1 : 0);
+    var moves = [];
+    if(Math.abs(dx) >= Math.abs(dy)){
+      if(stepX) moves.push([stepX,0]);
+      if(stepY) moves.push([0,stepY]);
+    } else {
+      if(stepY) moves.push([0,stepY]);
+      if(stepX) moves.push([stepX,0]);
+    }
+    for(var i=0;i<moves.length;i++){
+      var nx = sx+moves[i][0], ny = sy+moves[i][1];
+      if(tileIsWall(state.zone, nx, ny)) continue;
+      if(npcAt(state.zone, nx, ny)) continue;
+      if(nx===state.x && ny===state.y) continue; /* never step onto the player's own tile */
+      sniperState.x = nx; sniperState.y = ny;
+      break;
+    }
+  }
   if(sniperHasLineOfSight()){
     if(sniperState.aiming){
       openSniperEncounter();
@@ -1804,10 +1882,6 @@ function advanceSniper(){
     showToast('🎯 The Marksman has you lined up — move off his row/column!', true);
   } else {
     sniperState.aiming = false;
-    if(Math.random() < SNIPER_REPOSITION_CHANCE){
-      var tile = findOpenTile(state.zone, { x:state.x, y:state.y, minDist:2 });
-      if(tile){ sniperState.x = tile.x; sniperState.y = tile.y; }
-    }
   }
 }
 function openSniperEncounter(){
@@ -3371,6 +3445,9 @@ document.getElementById('btn-reset-confirm').addEventListener('click', function(
   clearSave();
   resetGame();
   document.getElementById('overlay-reset').hidden = true;
+  document.getElementById('overlay-title').hidden = false;
+  var introVideo = document.querySelector('.intro-video');
+  if(introVideo){ introVideo.pause(); introVideo.currentTime = 0; }
 });
 
 var summaryOverlay = document.getElementById('overlay-summary');
@@ -3452,6 +3529,7 @@ document.querySelectorAll('.jump-btn').forEach(function(btn){
     var z = btn.getAttribute('data-jump');
     state.preview = true;
     document.getElementById('preview-banner').hidden = false;
+    ensureZoneDecor(z);
     state.zone = z; state.x = 1; state.y = ZONES[z].entryY; state.dir='right';
     updateZoneBanner(); updateJournal(); updateMapTrack(); render(); saveGame();
     previewOverlay.hidden = true;
@@ -3495,6 +3573,8 @@ function resetGame(){
   clearSniperTimer();
   sniperState = { zone:null, x:null, y:null, aiming:false, question:null };
   sniperCooldown = 0;
+  zoneDecorState = {};
+  ensureZoneDecor('hq');
   document.getElementById('preview-banner').hidden = true;
   updateHud(); updateZoneBanner(); updateJournal(); updateMapTrack(); render();
   saveGame();
@@ -3507,6 +3587,7 @@ function loop(){
 }
 function init(){
   var hadSave = loadGame();
+  ensureZoneDecor(state.zone);
   document.getElementById('preview-banner').hidden = !state.preview;
   updateHud(); updateZoneBanner(); updateJournal(); updateMapTrack();
   if(hadSave){
