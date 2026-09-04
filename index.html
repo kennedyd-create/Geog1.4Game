@@ -50,8 +50,6 @@
   .hud .stat .label{color:var(--text-mute);font-size:8px;letter-spacing:1px;}
   .hud .stat .value{color:var(--paper);font-weight:800;font-size:13px;display:flex;align-items:center;gap:4px;}
   .coin-ico{display:inline-block;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--gold-bright),var(--gold) 60%,#8a6414 100%);border:1px solid #8a6414;flex:none;}
-  .xpbar{width:90px;height:10px;background:#000;border:2px solid var(--steel);position:relative;}
-  .xpbar-fill{position:absolute;inset:0;background:linear-gradient(90deg,var(--gold),var(--gold-bright));width:0%;transition:width .35s ease;}
   .hud-btn{
     font-weight:700;letter-spacing:0.3px;font-size:11px;
     background:var(--panel-2);color:var(--paper);border:2px solid var(--steel);
@@ -261,9 +259,8 @@
       <div class="sub">NCEA Level 1 Geography &middot; AS 91935 &middot; Geographic Decision-Making &middot; Issue &rarr; Perspectives &rarr; Decision</div>
     </div>
     <div class="hud">
-      <div class="stat"><span class="label">RANK</span><span class="value" id="hud-level">Lv 1</span></div>
-      <div class="stat"><span class="label">XP</span><div class="xpbar"><div class="xpbar-fill" id="hud-xpfill"></div></div></div>
-      <div class="stat"><span class="label">POINTS</span><span class="value" id="hud-coins"><span class="coin-ico"></span> 30</span></div>
+      <div class="stat"><span class="label">RANK</span><span class="value" id="hud-rank">🔰 Trainee</span></div>
+      <div class="stat"><span class="label">GOLD</span><span class="value" id="hud-coins"><span class="coin-ico"></span> 30</span></div>
       <div class="stat"><span class="label">BADGES</span><span class="value" id="hud-badges">0/6</span></div>
       <button class="hud-btn" id="btn-summary" aria-haspopup="dialog">&#128203; SUMMARY</button>
       <button class="hud-btn" id="btn-preview" aria-haspopup="dialog">&#128065; PREVIEW</button>
@@ -372,13 +369,13 @@
         <div><kbd>&#8592;&#8593;&#8594;&#8595;</kbd> / <kbd>WASD</kbd> — walk one tile</div>
         <div><kbd>Space</kbd> / <kbd>Enter</kbd> — talk to the character you're facing</div>
         <div>The barred exit tile unlocks once everyone required in that zone has been interviewed.</div>
-        <div>Correct answers earn <b>points</b> and XP, and add a Case File entry to your journal.</div>
-        <div>Stuck? Hit <b>Hint</b> — it costs a few points but gives you a clue.</div>
-        <div>Wrong answers cost a few points too, so read carefully before choosing — you can always try again.</div>
+        <div>Correct answers earn <b>gold coins</b>, and add a Case File entry to your journal.</div>
+        <div>Stuck? Hit <b>Hint</b> — it costs a few coins but gives you a clue.</div>
+        <div>Wrong answers cost a few coins too, so read carefully before choosing — you can always try again.</div>
         <div>Each character's case file needs to be read and ticked before their task unlocks — take the time to actually read it, the task is easier once you have.</div>
-        <div>Characters marked "bonus" are optional — good for extra points and deeper understanding.</div>
-        <div>Watch for <b>The Siren</b> — a flashing red hunter that actively chases you around some zones. Get caught and you're forced to answer a question: right earns a bonus, wrong costs you points on the spot. Dodge it on foot if you'd rather not risk it.</div>
-        <div>Watch out too for <b>The Marksman</b> — a flashing bright green figure who lines up a shot along your row or column. He'll telegraph the shot for one move with a dashed line before firing, so step off his row or column to dodge. Get hit and you have <b>10 seconds</b> to answer a question — run out of time or answer wrong and you lose 50 points on the spot.</div>
+        <div>Characters marked "bonus" are optional — good for extra coins and deeper understanding.</div>
+        <div>Watch for <b>The Siren</b> — a flashing red hunter that actively chases you around some zones. Get caught and you're forced to answer a question: right earns a bonus, wrong costs you coins on the spot. Dodge it on foot if you'd rather not risk it.</div>
+        <div>Watch out too for <b>The Marksman</b> — a flashing bright green figure who lines up a shot along your row or column. He'll telegraph the shot for one move with a dashed line before firing, so step off his row or column to dodge. Get hit and you have <b>10 seconds</b> to answer a question — run out of time or answer wrong and you lose 50 coins on the spot.</div>
         <div>Look for the green <b>📘 Teach Me</b> icon in each room — open it first. It explains exactly what that room is asking of you, and reading it is what unlocks the room's first task.</div>
         <div>The <b>CASE FILE</b> tab in your journal keeps every formula and fact you unlock, including three pinned reference cards you can check any time.</div>
         <div>Finish all zones, then find the Chief Examiner in the Final Assessment for a brand-new topic to test your method on.</div>
@@ -394,7 +391,7 @@
 <div class="overlay" id="overlay-reset" hidden>
   <div class="modal">
     <div class="modal-head"><h3>RESTART INVESTIGATION?</h3></div>
-    <div class="modal-body"><p>This clears all points, XP, and Case File entries — including your saved progress in this browser — and starts you over at the Academy entrance. This can't be undone.</p></div>
+    <div class="modal-body"><p>This clears all gold coins and Case File entries — including your saved progress in this browser — and starts you over at the Academy entrance. This can't be undone.</p></div>
     <div class="modal-foot">
       <button class="btn ghost" id="btn-reset-cancel">Cancel</button>
       <button class="btn" id="btn-reset-confirm">Restart</button>
@@ -478,9 +475,7 @@ var START_COINS = 30;
 var HINT_COST = 8;
 var WRONG_PENALTY = 12;
 var CORRECT_COINS = 10;
-var CORRECT_XP = 15;
 var INFO_COINS = 4;
-var INFO_XP = 6;
 
 /* Coin balance -> Investigator Rank tier. Spending coins on hints costs you rank,
    same as a real exam: lean on hints too much and it shows in the result. */
@@ -812,8 +807,8 @@ var NPCS = {
     ],
     task:{ type:'mcq', prompt:"According to the marking schedule, what does an Excellence answer do that a Merit answer doesn't?",
       options:[ {text:'Describes more perspectives overall, without weighing how much each one actually mattered', correct:false},
-                {text:'Evaluates the extent to which perspectives shaped the decision, using a relevant concept', correct:true},
-                {text:'Uses more formal vocabulary and a longer overall word count throughout the response', correct:false} ],
+                {text:'Uses more formal vocabulary and a longer overall word count throughout the response', correct:false},
+                {text:'Evaluates the extent to which perspectives shaped the decision, using a relevant concept', correct:true} ],
       correctMsg:"Correct — it's about judgement and depth, not length.",
       wrongMsg:"Have another look — it's about weighing HOW MUCH influence perspectives had, plus a concept.",
       hint:"Think 'extent to which' and 'concept'." } },
@@ -855,8 +850,8 @@ var NPCS = {
     ],
     task:{ type:'mcq', prompt:"Why is naming a specific resource better than saying ‘the pictures show erosion’?",
       options:[ {text:'It fills more space on the page, which markers tend to reward', correct:false},
-                {text:'It is specific, checkable, and proves you used the resource', correct:true},
-                {text:'It creates a stronger emotional impact on whoever is marking it', correct:false} ],
+                {text:'It creates a stronger emotional impact on whoever is marking it', correct:false},
+                {text:'It is specific, checkable, and proves you used the resource', correct:true} ],
       correctMsg:"Exactly — specificity is what earns marks.",
       wrongMsg:"Think about what a marker is actually checking for.",
       hint:"Markers reward specific, checkable use of resources." } },
@@ -959,8 +954,8 @@ var NPCS = {
       "Which of these actually sounds like Excellence?"
     ],
     task:{ type:'mcq', prompt:"Which sentence is the STRONGER Excellence-level justification?",
-      options:[ {text:'“Option B is clearly the best choice, because dune planting is a popular, environmentally friendly solution that most coastal scientists and local residents strongly prefer over the alternatives.”', correct:false},
-                {text:'“Option B is the superior decision because it uniquely satisfies Kāi Tahu’s kaitiakitanga obligations and costs far less than hard engineering, though it only partly addresses the uninsurability crisis threatening 10,000 homes by 2050.”', correct:true} ],
+      options:[ {text:'“Option B is the superior decision because it uniquely satisfies Kāi Tahu’s kaitiakitanga obligations and costs far less than hard engineering, though it only partly addresses the uninsurability crisis threatening 10,000 homes by 2050.”', correct:true},
+                {text:'“Option B is clearly the best choice, because dune planting is a popular, environmentally friendly solution that most coastal scientists and local residents strongly prefer over the alternatives.”', correct:false} ],
       correctMsg:"Yes — it names a choice, uses evidence and terminology, brings in a concept, AND honestly weighs a trade-off. That's evaluating the extent to which, not just describing.",
       wrongMsg:"The stronger one uses specific evidence, terminology, a concept, and admits a limitation — which is it?",
       hint:"Look for evidence, terminology, a concept, and an honest trade-off." } },
@@ -1000,9 +995,9 @@ var NPCS = {
   cv_quiz: { zone:'concepts', x:6, y:5, name:'Quiz Master', role:'Bonus — Concept Integration', color:'#7d93a8', required:false, hat:'star',
     intro:[ "One last check before the vault closes — and it's harder than just defining a word. Being able to recite what kaitiakitanga MEANS is worth very little on its own; Excellence answers actually WEAVE the concept into the specific decision, evidence and stakeholder in front of them." ],
     task:{ type:'mcq', prompt:"Which sentence actually INTEGRATES the concept of kaitiakitanga into the Dunedin decision, rather than just defining it?",
-      options:[ {text:'“Kaitiakitanga means guardianship of land and resources, protecting them for future generations.”', correct:false},
-                {text:'“Choosing Option B reflects kaitiakitanga, because restoring the dunes protects both the taonga they hold and the whenua itself — the same shared obligation that gives Kāi Tahu’s viewpoint so much weight in this decision.”', correct:true},
-                {text:'“Kaitiakitanga is an important value in te ao Māori that many iwi around New Zealand still practise today.”', correct:false} ],
+      options:[ {text:'“Kaitiakitanga means guardianship of land and resources, an important value that many communities across Aotearoa continue to practise and pass down today.”', correct:false},
+                {text:'“Kaitiakitanga is a significant concept in te ao Māori that reflects a broader cultural respect for the natural environment and its resources.”', correct:false},
+                {text:'“Choosing Option B reflects kaitiakitanga, because restoring the dunes protects the taonga they hold for future generations.”', correct:true} ],
       correctMsg:"Correct — it names the concept AND ties it directly to this decision, this evidence, and this stakeholder's weight in the outcome. That's integration, not just recall.",
       wrongMsg:"The other two only define or generally describe the concept — they never connect it to THIS decision.",
       hint:"Look for the option that ties the concept to a specific option, place and stakeholder." } },
@@ -1034,12 +1029,12 @@ var NPCS = {
                      {text:'“Tiny houses are generally a good idea everywhere, because they are smaller and cheaper to build, take up far less land, and are quick to construct compared to a standard single-family home.”', correct:false} ] },
         { prompt:"New scenario: a Pacific atoll community faces repeated flooding of its only school after king tides. The village council wants to raise the school's foundations; an off-island NGO wants to relocate the school inland; elders want to consult traditional ecological knowledge first. Which sentence correctly identifies THE ISSUE using the Task A formula?",
           options:[ {text:'“Moving the school inland is obviously the right call, since relocation is generally the safest long-term option for any coastal building.”', correct:false},
-                     {text:'“Recurring king-tide flooding is damaging the atoll’s only school, threatening children’s safe access to education in this low-lying community.”', correct:true},
-                     {text:'“There is ongoing disagreement in the community about how to respond to the school’s repeated flooding problem, with no clear consensus yet.”', correct:false} ] },
+                     {text:'“There is ongoing disagreement in the community about how to respond to the school’s repeated flooding problem, with no clear consensus yet.”', correct:false},
+                     {text:'“Recurring king-tide flooding is damaging the atoll’s only school, threatening children’s safe access to education in this low-lying community.”', correct:true} ] },
         { prompt:"In the atoll scenario, which group's viewpoint reflects a CULTURAL / INDIGENOUS perspective?",
-          options:[ {text:'The elders, who want to consult traditional knowledge first', correct:true},
-                     {text:'The off-island NGO proposing to relocate the school to a safer inland site', correct:false},
-                     {text:'The village council proposing to raise the school’s existing foundations', correct:false} ] }
+          options:[ {text:'The off-island NGO proposing to relocate the school to a safer inland site', correct:false},
+                     {text:'The village council proposing to raise the school’s existing foundations', correct:false},
+                     {text:'The elders, who want to consult traditional knowledge first', correct:true} ] }
       ],
       writtenTask:{
         prompt:"Real exams always include full written answers, not just multiple choice. Using the atoll school scenario from Question 5, write a short Task B paragraph — aim for 3 to 5 sentences — explaining the village council's perspective AND the off-island NGO's perspective, including each group's viewpoint on what should happen to the school.",
@@ -1130,8 +1125,8 @@ var NPCS = {
       "Which sentence actually sounds like a top Task C justification?"
     ],
     task:{ type:'mcq', prompt:"Which is the STRONGER Excellence-level justification for a decision at Waimārama Beach?",
-      options:[ {text:'“Option 2 is clearly the best choice, because banning vehicles is the safest and most sensible option for practically any popular beach anywhere in the country.”', correct:false},
-                {text:'“Option 2 is the strongest choice because it best protects the fragile dune system and addresses the safety concerns raised by both the Ngāti Kahungunu spokesperson and Peter Johnston, even though it comes at a real cost to residents like the Smiths who rely on vehicle access for fishing.”', correct:true} ],
+      options:[ {text:'“Option 2 best protects the fragile dune system and addresses the safety concerns raised by both the Ngāti Kahungunu spokesperson and Peter Johnston, though it costs residents like the Smiths their vehicle access for fishing.”', correct:true},
+                {text:'“Option 2 is clearly the best choice, because banning vehicles is generally regarded as the safest, most responsible approach for protecting any popular beach environment around the country.”', correct:false} ],
       correctMsg:"Yes — it names a choice, uses specific evidence and named stakeholders, AND honestly weighs a trade-off. That's evaluating the extent to which perspectives shaped the decision, not just describing them.",
       wrongMsg:"The stronger option names specific stakeholders, uses evidence, and admits a trade-off — which one does that?",
       hint:"Look for named stakeholders, specific evidence, and an honest trade-off." } },
@@ -1250,8 +1245,8 @@ var NPCS = {
       "Which sentence actually sounds like a top Task C justification?"
     ],
     task:{ type:'mcq', prompt:"Which is the STRONGER Excellence-level justification for a decision facing sea level rise in Fiji?",
-      options:[ {text:'“Option 2 is clearly the best choice, because nature-based solutions like mangroves are a popular, environmentally friendly option that most climate campaigners strongly support.”', correct:false},
-                {text:'“Option 2 is the strongest overall choice because restored mangroves have already been shown to cut wave height by up to 31%, directly supporting the environmental perspective of local campaigners and Lani Bola’s wish to remain on ancestral land, even though it would not fully protect town infrastructure the way a sea wall or full relocation might.”', correct:true} ],
+      options:[ {text:'“Option 2 is clearly the best choice, because nature-based solutions like mangroves are widely seen as a popular, environmentally friendly approach that most climate campaigners and international observers strongly support.”', correct:false},
+                {text:'“Option 2 is the strongest choice because restored mangroves cut wave height by up to 31%, supporting Lani Bola’s wish to stay on ancestral land, though it wouldn’t fully protect town infrastructure the way a sea wall might.”', correct:true} ],
       correctMsg:"Yes — it names a choice, uses specific evidence and named perspectives, AND honestly weighs a trade-off. That's evaluating the extent to which perspectives shaped the decision, not just describing them.",
       wrongMsg:"The stronger option names specific evidence and perspectives, and admits a trade-off — which one does that?",
       hint:"Look for named evidence, named perspectives, and an honest trade-off." } },
@@ -1343,8 +1338,8 @@ var CHECKLIST_ITEMS = [
 ========================================================= */
 var state = {
   zone:'hq', x:1, y:4, dir:'right',
-  coins: START_COINS, xp:0,
-  done:{}, cards:{}, introRead:{},
+  coins: START_COINS,
+  done:{}, cards:{}, introRead:{}, quoteSeen:{},
   preview:false,
   examScore:null,
   writtenAnswer:'', writtenDone:false,
@@ -1369,10 +1364,10 @@ function loadGame(){
       state.y = typeof loaded.y==='number' ? loaded.y : 4;
       state.dir = loaded.dir || 'right';
       state.coins = typeof loaded.coins==='number' ? loaded.coins : START_COINS;
-      state.xp = typeof loaded.xp==='number' ? loaded.xp : 0;
       state.done = loaded.done || {};
       state.cards = loaded.cards || {};
       state.introRead = (loaded.introRead && typeof loaded.introRead==='object') ? loaded.introRead : {};
+      state.quoteSeen = (loaded.quoteSeen && typeof loaded.quoteSeen==='object') ? loaded.quoteSeen : {};
       state.preview = !!loaded.preview;
       state.examScore = loaded.examScore != null ? loaded.examScore : null;
       state.writtenAnswer = typeof loaded.writtenAnswer==='string' ? loaded.writtenAnswer : '';
@@ -1391,9 +1386,7 @@ function clearSave(){
   try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
 }
 
-function xpToLevel(xp){ return 1 + Math.floor(xp/60); }
 function addCoins(n, allowNegative){ state.coins = allowNegative ? (state.coins + n) : Math.max(0, state.coins + n); updateHud(); saveGame(); }
-function addXp(n){ state.xp = Math.max(0, state.xp + n); updateHud(); saveGame(); }
 function badgeCount(){
   var n=0;
   ZONE_ORDER.forEach(function(z){ if(zoneFullyDone(z)) n++; });
@@ -1537,7 +1530,7 @@ function render(){
     drawSniperNpc(sniperState.x, sniperState.y);
   }
   if(zoneDecor && zoneDecor.quoteIcon){
-    drawQuoteIcon(zoneDecor.quoteIcon.x, zoneDecor.quoteIcon.y);
+    drawQuoteIcon(zoneDecor.quoteIcon.x, zoneDecor.quoteIcon.y, !state.quoteSeen[state.zone]);
   }
   if(currentZone().teachIcon){
     drawTeachIcon(currentZone().teachIcon.x, currentZone().teachIcon.y, !state.done['teach_'+state.zone]);
@@ -1600,9 +1593,9 @@ function drawSirenNpc(x,y){
   ctx.textAlign = 'center';
   ctx.fillText('⚠', x*TILE+TILE/2, y*TILE-2);
 }
-function drawQuoteIcon(x,y){
+function drawQuoteIcon(x,y,flashing){
   var cx = x*TILE+TILE/2, cy = y*TILE+TILE/2;
-  var pulse = REDUCED_MOTION ? 0.5 : (0.5+0.5*Math.sin(animT*0.15));
+  var pulse = (!REDUCED_MOTION && flashing) ? (0.5+0.5*Math.sin(animT*0.15)) : 0.5;
   var glowR = 10+pulse*9;
   var grad = ctx.createRadialGradient(cx,cy,1,cx,cy,glowR);
   grad.addColorStop(0,'rgba(255,206,107,'+(0.3+pulse*0.55).toFixed(2)+')');
@@ -1610,8 +1603,8 @@ function drawQuoteIcon(x,y){
   ctx.fillStyle = grad;
   ctx.beginPath(); ctx.arc(cx,cy,glowR,0,Math.PI*2); ctx.fill();
   ctx.save();
-  ctx.globalAlpha = REDUCED_MOTION ? 1 : (0.55+pulse*0.45);
-  ctx.font = (14+pulse*3).toFixed(1) + 'px sans-serif';
+  ctx.globalAlpha = flashing ? (REDUCED_MOTION ? 1 : (0.55+pulse*0.45)) : 0.85;
+  ctx.font = (flashing ? (14+pulse*3) : 15).toFixed(1) + 'px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('💡', cx, cy+1);
@@ -1729,10 +1722,34 @@ function tryMove(dx,dy,dir){
         maybeRoamSpawnSniper();
         advanceSniper();
       }
+      maybeForceSpawnHazard();
     }
   }
   render();
   saveGame();
+}
+/* Guarantees a hazard shows up if the player lingers in a hazard-eligible
+   zone too long without one appearing on its own — counts down every
+   step taken in-zone with neither hazard active, and force-spawns one
+   once the threshold is reached. Resets whenever a hazard is already
+   present, or the player changes zone. */
+var DWELL_FORCE_SPAWN_STEPS = 7;
+var dwellSteps = 0;
+function resetDwellTimer(){ dwellSteps = 0; }
+function maybeForceSpawnHazard(){
+  if(state.preview){ dwellSteps = 0; return; }
+  if(sirenState.zone === state.zone || sniperState.zone === state.zone){ dwellSteps = 0; return; }
+  var sirenEligible = SIREN_ZONES.indexOf(state.zone) !== -1;
+  var sniperEligible = SNIPER_ZONES.indexOf(state.zone) !== -1;
+  if(!sirenEligible && !sniperEligible){ dwellSteps = 0; return; }
+  dwellSteps++;
+  if(dwellSteps < DWELL_FORCE_SPAWN_STEPS) return;
+  dwellSteps = 0;
+  var tile = findOpenTile(state.zone, { x:state.x, y:state.y, minDist:3 });
+  if(!tile) return;
+  var pickSiren = sirenEligible && (!sniperEligible || Math.random() < 0.5);
+  if(pickSiren){ spawnSirenAt(state.zone, tile); }
+  else { spawnSniperAt(state.zone, tile); }
 }
 function goNextZone(){
   var next = currentZone().next;
@@ -1743,6 +1760,7 @@ function goNextZone(){
   ensureZoneDecor(next);
   maybeSpawnSiren(next);
   maybeSpawnSniper(next);
+  resetDwellTimer();
   updateZoneBanner();
   updateJournal();
   updateMapTrack();
@@ -1767,7 +1785,7 @@ function interact(){
    Appears often, flashing red, and steps toward you every time
    you move. If it catches you (gets adjacent), you're forced to
    answer a question on the spot — get it wrong and it takes a
-   chunk of your points, even into the negatives; get it right
+   chunk of your gold coins, even into the negatives; get it right
    and it pays out instead. It never blocks an exit — the only
    way to avoid it is to dodge it on foot.
 ========================================================= */
@@ -1778,18 +1796,17 @@ var SIREN_CATCH_DIST = 1;
 var SIREN_COOLDOWN_STEPS = 4;
 var SIREN_PENALTY = 50;
 var SIREN_REWARD_COINS = 20;
-var SIREN_REWARD_XP = 10;
 var sirenState = { zone:null, x:null, y:null, question:null };
 var sirenCooldown = 0;
 var SIREN_QUESTIONS = [
   { q:'Which command word asks you to judge HOW MUCH influence something had, not just describe it?', options:['Outline','Describe','Evaluate the extent to which','List'], correct:2 },
   { q:'What is the Excellence cut score range on the AS 91935 marking schedule?', options:['0–2','3–4','5–6','7–8'], correct:3 },
-  { q:'Kaitiakitanga is best described as...', options:['A formal council meeting about land use','Guardianship of resources for future generations','A traditional style of sea wall','An official weather warning system'], correct:1 },
-  { q:'Which is stronger evidence for a Task A answer?', options:['"It is a really big problem for everyone"','"Erosion is moving the coast inland by up to 4 metres a year"','"A lot of people are quite upset about it"','"The local weather has been changing lately"'], correct:1 },
-  { q:'A "perspective" is best described as...', options:['One single isolated fact about an issue', 'A way of looking at the world, shaped by values and beliefs', 'A recurring seasonal weather pattern', 'Any type of supporting evidence'], correct:1 },
-  { q:'Which option for Dunedin is classic "soft engineering"?', options:['Building large concrete sea walls', 'Dune planting and notching', 'Managed retreat of the whole coastline', 'Raising household insurance premiums'], correct:1 },
+  { q:'Kaitiakitanga is best described as...', options:['Guardianship of resources for future generations','A formal council meeting about land use','A traditional style of sea wall','An official weather warning system'], correct:0 },
+  { q:'Which is stronger evidence for a Task A answer?', options:['"Erosion is moving the coast inland by up to 4 metres a year"','"It is a really big problem for everyone"','"A lot of people are quite upset about it"','"The local weather has been changing lately"'], correct:0 },
+  { q:'A "perspective" is best described as...', options:['One single isolated fact about an issue', 'A recurring seasonal weather pattern', 'A way of looking at the world, shaped by values and beliefs', 'Any type of supporting evidence'], correct:2 },
+  { q:'Which option for Dunedin is classic "soft engineering"?', options:['Building large concrete sea walls', 'Managed retreat of the whole coastline', 'Dune planting and notching', 'Raising household insurance premiums'], correct:2 },
   { q:'A "viewpoint" is best described as...', options:['A specific opinion held on this particular issue', 'A type of graph used to show trends', 'A named geographic location on a map', 'A cut score on the marking schedule'], correct:0 },
-  { q:'Task C asks you to identify which of these, and justify your choice?', options:['Whichever option turns out to be cheapest', 'The viewpoint that mattered most in your decision', 'The oldest resource in the booklet', 'Whichever answer is the shortest to write'], correct:1 },
+  { q:'Task C asks you to identify which of these, and justify your choice?', options:['Whichever option turns out to be cheapest', 'The oldest resource in the booklet', 'Whichever answer is the shortest to write', 'The viewpoint that mattered most in your decision'], correct:3 },
   { q:'"Kāi Tahu wants to protect the dunes" is a viewpoint. What PERSPECTIVE produces it?', options:['An economic perspective, focused mainly on construction costs', 'A cultural / indigenous perspective, rooted in kaitiakitanga', 'A political perspective, focused mainly on council elections', 'A purely recreational perspective about beach access'], correct:1 },
   { q:'A candidate notices ONE stakeholder\'s viewpoint is shaped by both cultural AND environmental values at once, not just one. What is this called?', options:['A viewpoint contradiction, which should be avoided in an answer', 'A compound perspective — genuinely Excellence-level, holistic thinking', 'A grading error that markers are trained to correct', 'An irrelevant detail that should be left out of an answer'], correct:1 },
   { q:'A student describes a topic as "sand mining" without checking the resource booklet, when the real challenge described there was "conflict over access". What went wrong?', options:['Nothing — sand mining and access conflict are the same challenge', 'They assumed the challenge from the topic instead of reading the booklet', 'They used too much evidence in their answer', 'They wrote in the wrong task box on the answer sheet'], correct:1 }
@@ -1801,7 +1818,7 @@ var SIREN_QUESTIONS = [
    one full move with a dashed sightline before firing — dodge
    out of his row/column to stay safe. Get hit and you must
    answer a question with a live 10-second countdown; run out
-   of time OR answer wrong and you lose points on the spot.
+   of time OR answer wrong and you lose gold coins on the spot.
    Reuses the same curriculum-aligned question bank as the Siren.
 ========================================================= */
 var SNIPER_ZONES = ['issue','perspectives','decision','concepts','extensionA','extensionB','extensionC','fijiA','fijiB','fijiC'];
@@ -1811,7 +1828,6 @@ var SNIPER_COOLDOWN_STEPS = 4;
 var SNIPER_TIME_LIMIT = 10;
 var SNIPER_PENALTY = 50;
 var SNIPER_REWARD_COINS = 20;
-var SNIPER_REWARD_XP = 10;
 var sniperState = { zone:null, x:null, y:null, aiming:false, question:null };
 var sniperCooldown = 0;
 var sniperTimerId = null;
@@ -1902,7 +1918,7 @@ function renderSniperEncounter(){
   var body = document.getElementById('dlg-body'), foot = document.getElementById('dlg-foot');
   body.innerHTML=''; foot.innerHTML='';
   var warn = document.createElement('p');
-  warn.innerHTML = '<b>Tagged by the Marksman — bright green light in your eyes.</b> Answer in ' + SNIPER_TIME_LIMIT + ' seconds: get it right for a bonus, get it wrong or run out of time and you lose <b>' + SNIPER_PENALTY + ' points</b> immediately, even into the negatives. Your case file progress is never touched either way.';
+  warn.innerHTML = '<b>Tagged by the Marksman — bright green light in your eyes.</b> Answer in ' + SNIPER_TIME_LIMIT + ' seconds: get it right for a bonus, get it wrong or run out of time and you lose <b>' + SNIPER_PENALTY + ' gold coins</b> immediately, even into the negatives. Your case file progress is never touched either way.';
   body.appendChild(warn);
   var timerRow = document.createElement('div'); timerRow.className = 'sniper-timer-row';
   var timerLabel = document.createElement('span'); timerLabel.textContent = 'Time left:';
@@ -1946,7 +1962,7 @@ function onSniperAnswer(idx, optList){
   Array.prototype.forEach.call(optList.children, function(c){ c.disabled = true; });
   if(idx === sniperState.question.correct){
     optList.children[idx].classList.add('correct');
-    addCoins(SNIPER_REWARD_COINS); addXp(SNIPER_REWARD_XP);
+    addCoins(SNIPER_REWARD_COINS);
     setTimeout(function(){ renderSniperResult(true,false); }, 700);
   } else {
     optList.children[idx].classList.add('wrong');
@@ -1968,11 +1984,11 @@ function renderSniperResult(won, timedOut){
   var banner = document.createElement('div');
   banner.className = 'grade-banner' + (won ? '' : ' fail');
   if(won){
-    banner.innerHTML = '<div class="grade">CLEAN SHOT ANSWERED</div><div class="sub">Hit, but you answered it clean. +' + SNIPER_REWARD_COINS + ' points, +' + SNIPER_REWARD_XP + ' XP.</div>';
+    banner.innerHTML = '<div class="grade">CLEAN SHOT ANSWERED</div><div class="sub">Hit, but you answered it clean. +' + SNIPER_REWARD_COINS + ' gold coins.</div>';
   } else if(timedOut){
-    banner.innerHTML = '<div class="grade">TOO SLOW</div><div class="sub">Time ran out — ' + SNIPER_PENALTY + ' points gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
+    banner.innerHTML = '<div class="grade">TOO SLOW</div><div class="sub">Time ran out — ' + SNIPER_PENALTY + ' coins gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
   } else {
-    banner.innerHTML = '<div class="grade">HIT</div><div class="sub">Wrong call under pressure — ' + SNIPER_PENALTY + ' points gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
+    banner.innerHTML = '<div class="grade">HIT</div><div class="sub">Wrong call under pressure — ' + SNIPER_PENALTY + ' coins gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
   }
   body.appendChild(banner);
   var doneBtn = document.createElement('button'); doneBtn.className='btn'; doneBtn.textContent='Continue'; doneBtn.onclick=closeSniperDialog;
@@ -1987,7 +2003,7 @@ function closeSniperDialog(){
 
 /* =========================================================
    WISDOM CORNER — a glowing lightbulb icon in every zone.
-   Purely optional flavour: costs a few points, hands back a
+   Purely optional flavour: costs a few coins, hands back a
    random inspirational quote. Never blocks or gates anything.
 ========================================================= */
 var QUOTE_COST = 5;
@@ -2011,10 +2027,12 @@ function openQuoteIcon(){
   currentNpcId = null;
   dialogOpen = true;
   stopSpeaking();
+  state.quoteSeen[state.zone] = true;
+  saveGame();
   addCoins(-QUOTE_COST);
   var q = QUOTES[Math.floor(Math.random()*QUOTES.length)];
   document.getElementById('dlg-name').textContent = 'WISDOM CORNER';
-  document.getElementById('dlg-role').textContent = '−' + QUOTE_COST + ' points, for a moment of inspiration';
+  document.getElementById('dlg-role').textContent = '−' + QUOTE_COST + ' gold coins, for a moment of inspiration';
   var badge = document.getElementById('dlg-badge');
   badge.style.background = 'var(--gold)';
   badge.textContent = '💡';
@@ -2210,7 +2228,7 @@ function renderSirenEncounter(){
   var body = document.getElementById('dlg-body'), foot = document.getElementById('dlg-foot');
   body.innerHTML=''; foot.innerHTML='';
   var warn = document.createElement('p');
-  warn.innerHTML = '<b>The Siren has caught you — red light strobing right in your face.</b> Answer this question right now: get it right for a bonus, get it wrong and you lose <b>' + SIREN_PENALTY + ' points</b> immediately, even into the negatives. Your case file progress is never touched either way.';
+  warn.innerHTML = '<b>The Siren has caught you — red light strobing right in your face.</b> Answer this question right now: get it right for a bonus, get it wrong and you lose <b>' + SIREN_PENALTY + ' gold coins</b> immediately, even into the negatives. Your case file progress is never touched either way.';
   body.appendChild(warn);
   var qP = document.createElement('p'); qP.style.cssText='font-weight:700;margin-top:10px;'; qP.textContent = sirenState.question.q;
   body.appendChild(qP);
@@ -2231,7 +2249,7 @@ function onSirenAnswer(idx, optList){
   Array.prototype.forEach.call(optList.children, function(c){ c.disabled = true; });
   if(idx === sirenState.question.correct){
     optList.children[idx].classList.add('correct');
-    addCoins(SIREN_REWARD_COINS); addXp(SIREN_REWARD_XP);
+    addCoins(SIREN_REWARD_COINS);
     setTimeout(function(){ renderSirenResult(true); }, 700);
   } else {
     optList.children[idx].classList.add('wrong');
@@ -2246,9 +2264,9 @@ function renderSirenResult(won){
   var banner = document.createElement('div');
   banner.className = 'grade-banner' + (won ? '' : ' fail');
   if(won){
-    banner.innerHTML = '<div class="grade">SHARP EYES</div><div class="sub">Caught, but you answered it clean. +' + SIREN_REWARD_COINS + ' points, +' + SIREN_REWARD_XP + ' XP.</div>';
+    banner.innerHTML = '<div class="grade">SHARP EYES</div><div class="sub">Caught, but you answered it clean. +' + SIREN_REWARD_COINS + ' gold coins.</div>';
   } else {
-    banner.innerHTML = '<div class="grade">CAUGHT OUT</div><div class="sub">Wrong call under pressure — ' + SIREN_PENALTY + ' points gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
+    banner.innerHTML = '<div class="grade">CAUGHT OUT</div><div class="sub">Wrong call under pressure — ' + SIREN_PENALTY + ' coins gone, whatever your balance was. It was only ever a bonus round, though — your case file progress is untouched.</div>';
   }
   body.appendChild(banner);
   var doneBtn = document.createElement('button'); doneBtn.className='btn'; doneBtn.textContent='Continue'; doneBtn.onclick=closeSirenDialog;
@@ -2476,11 +2494,10 @@ function renderReadGate(id, npc, container, foot){
   addLeaveRow(foot, id);
 }
 
-function markSolved(id, coins, xp){
+function markSolved(id, coins){
   state.done[id] = true;
   state.cards[id] = true;
   addCoins(coins);
-  addXp(xp);
   updateHud();
   updateJournal();
   updateMapTrack();
@@ -2532,7 +2549,7 @@ function renderMCQ(id, container, foot){
         btn.classList.add('correct');
         Array.prototype.forEach.call(list.children, function(b){ b.disabled = true; });
         showFeedback(wrap, task.correctMsg, true);
-        markSolved(id, CORRECT_COINS, CORRECT_XP);
+        markSolved(id, CORRECT_COINS);
         renderCloseFooter(foot);
       } else {
         btn.classList.add('wrong');
@@ -2603,7 +2620,7 @@ function renderPick(id, container, foot){
     });
     if(right){
       showFeedback(wrap, task.correctMsg, true);
-      markSolved(id, CORRECT_COINS, CORRECT_XP);
+      markSolved(id, CORRECT_COINS);
       renderCloseFooter(foot);
     } else {
       addCoins(-WRONG_PENALTY);
@@ -2675,7 +2692,7 @@ function renderSequence(id, container, foot){
     var right = chosen.every(function(v,i){ return v===i; });
     if(right){
       showFeedback(wrap, task.correctMsg, true);
-      markSolved(id, CORRECT_COINS, CORRECT_XP);
+      markSolved(id, CORRECT_COINS);
       renderCloseFooter(foot);
     } else {
       addCoins(-WRONG_PENALTY);
@@ -2750,7 +2767,7 @@ function renderMatch(id, container, foot){
         selectedLeft = null; selectedRight = null;
         if(matchedCount === task.pairs.length){
           showFeedback(wrap, task.correctMsg, true);
-          markSolved(id, CORRECT_COINS, CORRECT_XP);
+          markSolved(id, CORRECT_COINS);
           renderCloseFooter(foot);
         }
       } else {
@@ -2852,7 +2869,7 @@ function renderHighlight(id, container, foot){
     hasChecked = true;
     if(hits === total){
       showFeedback(wrap, task.correctMsg, true);
-      markSolved(id, CORRECT_COINS, CORRECT_XP);
+      markSolved(id, CORRECT_COINS);
       renderCloseFooter(foot);
     } else {
       addCoins(-WRONG_PENALTY);
@@ -2936,7 +2953,7 @@ function renderWritten(id, container, foot){
       doneBtn.addEventListener('click', function(){
         state.textAnswers[id] = ta.value;
         showFeedback(wrap, task.correctMsg || 'Logged — nice work.', true);
-        markSolved(id, CORRECT_COINS, CORRECT_XP);
+        markSolved(id, CORRECT_COINS);
         renderCloseFooter(foot);
       });
       foot.appendChild(doneBtn);
@@ -2975,7 +2992,7 @@ function renderBoss(id, container, foot){
         if(opt.correct){
           btn.classList.add('correct');
           correctCount++;
-          addCoins(CORRECT_COINS); addXp(CORRECT_XP);
+          addCoins(CORRECT_COINS);
           showToast('Correct!');
         } else {
           btn.classList.add('wrong');
@@ -3134,7 +3151,7 @@ function renderBoss(id, container, foot){
 
     if(correctCount >= 3){
       var firstPass = !state.done[id];
-      markSolved(id, 0, 20);
+      markSolved(id, 30);
       if(firstPass && !state.summarySubmitted){ pendingMandatorySummary = true; }
     } else {
       updateHud(); updateJournal(); updateMapTrack(); saveGame();
@@ -3171,12 +3188,11 @@ function renderBoss(id, container, foot){
    HUD / JOURNAL / CHECKLIST
 ========================================================= */
 function updateHud(){
-  document.getElementById('hud-level').textContent = 'Lv ' + xpToLevel(state.xp);
-  var pct = (state.xp % 60) / 60 * 100;
-  document.getElementById('hud-xpfill').style.width = pct + '%';
   var rank = coinRank(state.coins);
-  document.getElementById('hud-coins').innerHTML = '<span class="coin-ico"></span> ' + state.coins +
-    ' <span id="hud-rank-emoji" title="' + rank.label + ' — your Investigator Rank, based on your coin balance">' + rank.emoji + '</span>';
+  var rankEl = document.getElementById('hud-rank');
+  rankEl.textContent = rank.emoji + ' ' + rank.label.replace(' Investigator', '');
+  rankEl.title = rank.label + ' — your Investigator Rank, based on your gold coin balance';
+  document.getElementById('hud-coins').innerHTML = '<span class="coin-ico"></span> ' + state.coins;
   document.getElementById('hud-badges').textContent = badgeCount() + '/' + ZONE_ORDER.length;
 }
 function updateZoneBanner(){
@@ -3276,7 +3292,7 @@ function computeSummaryData(){
   var fijiIds = idsForZones(['fijiA','fijiB','fijiC','fijiFinale']);
   var fijiDone = fijiIds.filter(function(id){ return state.done[id]; }).length;
   return {
-    level: xpToLevel(state.xp), xp: state.xp, coins: state.coins, rank: rank,
+    coins: state.coins, rank: rank,
     logged: doneCount(), loggedTotal: ALL_NPC_IDS.length,
     zonesDone: badgeCount(), zonesTotal: ZONE_ORDER.length,
     examAttempted: !!state.examScore, examScore: state.examScore, writtenAnswer: state.writtenAnswer,
@@ -3301,9 +3317,9 @@ function renderSummary(){
   body.innerHTML = '';
 
   body.appendChild(summaryCard('INVESTIGATOR', function(el){
-    var h4 = document.createElement('h4'); h4.style.fontSize = '13px'; h4.textContent = 'Level ' + d.level + ' · ' + d.xp + ' XP';
+    var h4 = document.createElement('h4'); h4.style.fontSize = '13px'; h4.innerHTML = d.rank.emoji + ' ' + d.rank.label;
     var p = document.createElement('p');
-    p.innerHTML = '<span class="coin-ico" style="vertical-align:-1px;"></span> ' + d.coins + ' coins &nbsp;—&nbsp; Rank: <b>' + d.rank.emoji + ' ' + d.rank.label + '</b>';
+    p.innerHTML = '<span class="coin-ico" style="vertical-align:-1px;"></span> ' + d.coins + ' gold coins';
     var note = document.createElement('p'); note.className = 'dlg-note'; note.style.margin = '6px 0 0';
     note.textContent = 'Rank tracks your coin balance — hints cost coins, so leaning on fewer of them keeps your rank higher.';
     el.appendChild(h4); el.appendChild(p); el.appendChild(note);
@@ -3397,8 +3413,7 @@ function buildSummaryText(){
   lines.push('NCEA Level 1 Geography, AS 91935');
   if(state.studentName && state.studentName.trim()){ lines.push('Student: ' + state.studentName.trim()); }
   lines.push('');
-  lines.push('Investigator: Level ' + d.level + ' (' + d.xp + ' XP)');
-  lines.push('Coins: ' + d.coins + '  —  Rank: ' + d.rank.emoji + ' ' + d.rank.label);
+  lines.push('Gold Coins: ' + d.coins + '  —  Rank: ' + d.rank.emoji + ' ' + d.rank.label);
   lines.push('Case File entries logged: ' + d.logged + ' / ' + d.loggedTotal);
   lines.push('Zones completed: ' + d.zonesDone + ' / ' + d.zonesTotal);
   lines.push('');
@@ -3531,6 +3546,7 @@ document.querySelectorAll('.jump-btn').forEach(function(btn){
     document.getElementById('preview-banner').hidden = false;
     ensureZoneDecor(z);
     state.zone = z; state.x = 1; state.y = ZONES[z].entryY; state.dir='right';
+    resetDwellTimer();
     updateZoneBanner(); updateJournal(); updateMapTrack(); render(); saveGame();
     previewOverlay.hidden = true;
     showToast('Jumped to: ' + ZONES[z].name);
@@ -3562,7 +3578,7 @@ document.getElementById('btn-start').addEventListener('click', function(){
 ========================================================= */
 function resetGame(){
   state.zone='hq'; state.x=1; state.y=4; state.dir='right';
-  state.coins=START_COINS; state.xp=0; state.done={}; state.cards={}; state.introRead={};
+  state.coins=START_COINS; state.done={}; state.cards={}; state.introRead={}; state.quoteSeen={};
   state.preview=false; state.examScore=null;
   state.writtenAnswer=''; state.writtenDone=false;
   state.examMcqDone=false; state.examCorrectCount=0;
@@ -3573,6 +3589,7 @@ function resetGame(){
   clearSniperTimer();
   sniperState = { zone:null, x:null, y:null, aiming:false, question:null };
   sniperCooldown = 0;
+  resetDwellTimer();
   zoneDecorState = {};
   ensureZoneDecor('hq');
   document.getElementById('preview-banner').hidden = true;
@@ -3588,6 +3605,7 @@ function loop(){
 function init(){
   var hadSave = loadGame();
   ensureZoneDecor(state.zone);
+  resetDwellTimer();
   document.getElementById('preview-banner').hidden = !state.preview;
   updateHud(); updateZoneBanner(); updateJournal(); updateMapTrack();
   if(hadSave){
